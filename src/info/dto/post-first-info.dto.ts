@@ -4,7 +4,7 @@ import { ClientInfo } from "../entities/client-info.entity";
 import { Column } from "typeorm";
 
 export class ClientInfoDto extends ClientInfo {
-  @Column({ nullable: true })
+  @Column({ nullable: true, select: false })
   @IsString()
   @Length(5)
   password?: string;

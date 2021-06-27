@@ -53,10 +53,12 @@ export class InfoEntity extends CommonEntitiy {
 
   @BeforeInsert()
   async hashPassword(): Promise<void> {
-    try {
-      this.password = await bcrypt.hash(this.password, 10);
-    } catch (e) {
-      throw new InternalServerErrorException();
+    if (this.password) {
+      try {
+        this.password = await bcrypt.hash(this.password, 10);
+      } catch (e) {
+        throw new InternalServerErrorException();
+      }
     }
   }
 

@@ -34,15 +34,14 @@ export class InfoService {
 
   async saveInfo(infoData: InfoDto): Promise<{ a: boolean }> {
     try {
-      const { clientEmail, password } = infoData;
+      const { clientEmail, password, clientInfo } = infoData;
       const exists = await this.info.findOne({ clientEmail });
 
       if (exists) {
+        exists.clientInfo = clientInfo;
+        await this.clientInfo.save(exists);
         return { a: false };
       }
-      const { clientInfo, baseInfo } = infoData;
-      //   const newClientInfo = { ...infoData };
-      //   delete newClientInfo.password;
 
       const crateClientInfo = await this.clientInfo.save(
         this.clientInfo.create(clientInfo),
@@ -56,8 +55,6 @@ export class InfoService {
           clientInfo: crateClientInfo,
         }),
       );
-
-      console.log(newInfoData.id);
 
       return { a: true };
     } catch (e) {
