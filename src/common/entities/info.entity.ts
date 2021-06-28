@@ -25,28 +25,31 @@ export class InfoEntity extends CommonEntitiy {
   @IsString()
   clientEmail: string;
 
-  @Column({ nullable: true }, { select: false })
+  @Column({ nullable: true, select: false })
   @IsString()
   @Length(5)
   password?: string;
 
   @OneToOne(() => ClientInfo, (clientInfo) => clientInfo.info, {
     nullable: false,
-    onDelete: "SET NULL",
+    onDelete: "CASCADE",
+    eager: true,
   })
   @JoinColumn()
   clientInfo: ClientInfo;
 
   @OneToOne(() => BaseInfo, (baseInfo) => baseInfo.info, {
     nullable: true,
-    onDelete: "SET NULL",
+    onDelete: "CASCADE",
+    eager: true,
   })
   @JoinColumn()
   baseInfo: BaseInfo;
 
   @OneToOne(() => DetailInfo, (baseInfo) => baseInfo.info, {
     nullable: true,
-    onDelete: "SET NULL",
+    onDelete: "CASCADE",
+    eager: true,
   })
   @JoinColumn()
   detailInfo: DetailInfo;

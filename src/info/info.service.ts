@@ -4,10 +4,12 @@ import { InfoEntity } from "../common/entities/info.entity";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository, createConnection } from "typeorm";
 import { ClientInfo } from "./entities/client-info.entity";
-import { ClientInfoDto } from "./dto/post-first-info.dto";
+import { ClientInfoDto, ClientInfoOutput } from "./dto/client-info.dto";
 import { InfoDto } from "src/common/dto/info.dto";
 import { JwtService } from "src/jwt/jwt.service";
 import { BaseInfo } from "./entities/base-info.entity";
+
+const infoNameArray = ["clientInfo", "baseInfo"];
 
 @Injectable()
 export class InfoService {
@@ -32,15 +34,27 @@ export class InfoService {
     return this.info.findOne({ id });
   }
 
-  async saveInfo(infoData: InfoDto): Promise<{ a: boolean }> {
+  async saveInfo(infoData: InfoDto): Promise<ClientInfoOutput> {
     try {
       const { clientEmail, password, clientInfo } = infoData;
-      const exists = await this.info.findOne({ clientEmail });
+
+      const exists = await this.info.findOne(
+        { clientEmail },
+        { relations: [...infoNameArray] },
+      );
 
       if (exists) {
-        exists.clientInfo = clientInfo;
-        await this.clientInfo.save(exists);
-        return { a: false };
+        const infoName = infoNameArray[0];
+        const id = exists[infoName].id;
+
+        const prevInfo = await this[infoName].findOne({ id });
+
+        await this[infoName].save({
+          ...prevInfo,
+          ...infoData[infoName],
+        });
+
+        return { ok: true, token: "ischanged" };
       }
 
       const crateClientInfo = await this.clientInfo.save(
@@ -56,10 +70,9 @@ export class InfoService {
         }),
       );
 
-      return { a: true };
-    } catch (e) {
-      console.log(e);
-      return { a: false };
+      return { ok: true, token: "dsdsf" };
+    } catch (error) {
+      return { ok: false, error };
     }
   }
 }

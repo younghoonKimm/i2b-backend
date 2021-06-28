@@ -1,5 +1,5 @@
 import { Controller, Get, Post, Body } from "@nestjs/common";
-import { ClientInfoDto } from "./dto/post-first-info.dto";
+import { ClientInfoDto } from "./dto/client-info.dto";
 import { InfoService } from "./info.service";
 import { InfoDto } from "src/common/dto/info.dto";
 
