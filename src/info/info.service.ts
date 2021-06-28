@@ -44,24 +44,13 @@ export class InfoService {
       );
 
       if (exists) {
-        // console.log(clientInfo);
-        // console.log(
-        //   (exists.clientInfo = { ...exists.clientInfo, ...clientInfo }),
-        // );
+        const infoName = infoNameArray[0]; //0 will be status
 
-        const infoName = infoNameArray[0];
-        // const id = exists[infoName].id;
-
-        // const prevInfo = await this[infoName].findOne({ id });
-
-        // await this[infoName].save({
-        //   ...prevInfo,
-        //   ...infoData[infoName],
-        // });
         await this[infoName].save({
           ...exists.clientInfo,
           ...clientInfo,
         });
+
         return { ok: true, token: "ischanged" };
       }
 
@@ -71,7 +60,7 @@ export class InfoService {
 
       const newInfoData = await this.info.save(
         this.info.create({
-          status: 1,
+          status: 1, //will be just status.
           clientEmail,
           password,
           clientInfo: crateClientInfo,
@@ -82,5 +71,11 @@ export class InfoService {
     } catch (error) {
       return { ok: false, error };
     }
+  }
+
+  async uploadFile() {}
+
+  async saveInfoInDetailPage() {
+    await console.log(32223);
   }
 }
