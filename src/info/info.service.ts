@@ -44,16 +44,24 @@ export class InfoService {
       );
 
       if (exists) {
+        // console.log(clientInfo);
+        // console.log(
+        //   (exists.clientInfo = { ...exists.clientInfo, ...clientInfo }),
+        // );
+
         const infoName = infoNameArray[0];
-        const id = exists[infoName].id;
+        // const id = exists[infoName].id;
 
-        const prevInfo = await this[infoName].findOne({ id });
+        // const prevInfo = await this[infoName].findOne({ id });
 
+        // await this[infoName].save({
+        //   ...prevInfo,
+        //   ...infoData[infoName],
+        // });
         await this[infoName].save({
-          ...prevInfo,
-          ...infoData[infoName],
+          ...exists.clientInfo,
+          ...clientInfo,
         });
-
         return { ok: true, token: "ischanged" };
       }
 
