@@ -25,7 +25,7 @@ export class InfoEntity extends CommonEntitiy {
   @IsString()
   clientEmail: string;
 
-  @Column({ nullable: true })
+  @Column({ nullable: true }, { select: false })
   @IsString()
   @Length(5)
   password?: string;
