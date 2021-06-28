@@ -51,7 +51,11 @@ import { MailModule } from "./mail/mail.module";
     JwtModule.forRoot({
       privateKey: process.env.PRIVATE_KEY,
     }),
-    MailModule,
+    MailModule.forRoot({
+      user: process.env.MAIL_USER,
+      pass: process.env.MAIL_PASSWORD,
+      host: process.env.MAIL_HOST,
+    }),
     AdminModule,
     InfoModule,
     CommonModule,
