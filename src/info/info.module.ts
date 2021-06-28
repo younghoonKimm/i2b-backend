@@ -6,10 +6,12 @@ import { InfoEntity } from "src/common/entities/info.entity";
 import { ClientInfo } from "./entities/client-info.entity";
 import { BaseInfo } from "./entities/base-info.entity";
 import { DetailInfo } from "./entities/detail-info.entity";
+import { MailModule } from "src/mail/mail.module";
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([InfoEntity, ClientInfo, BaseInfo, DetailInfo]),
+    MailModule,
   ],
   controllers: [InfoController],
   providers: [InfoService],

@@ -19,6 +19,7 @@ import { BaseInfo } from "./info/entities/base-info.entity";
 import { DetailInfo } from "./info/entities/detail-info.entity";
 import { JWTMiddlewares } from "./jwt/jwt.middlewares";
 import { JwtModule } from "./jwt/jwt.module";
+import { MailModule } from "./mail/mail.module";
 
 @Module({
   imports: [
@@ -50,6 +51,7 @@ import { JwtModule } from "./jwt/jwt.module";
     JwtModule.forRoot({
       privateKey: process.env.PRIVATE_KEY,
     }),
+    MailModule,
     AdminModule,
     InfoModule,
     CommonModule,

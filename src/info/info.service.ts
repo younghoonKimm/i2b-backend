@@ -8,6 +8,7 @@ import { ClientInfoDto, ClientInfoOutput } from "./dto/client-info.dto";
 import { InfoDto } from "src/common/dto/info.dto";
 import { JwtService } from "src/jwt/jwt.service";
 import { BaseInfo } from "./entities/base-info.entity";
+import { MailService } from "src/mail/mail.service";
 
 const infoNameArray = ["clientInfo", "baseInfo"];
 
@@ -20,6 +21,7 @@ export class InfoService {
     @InjectRepository(BaseInfo)
     private readonly baseInfo: Repository<BaseInfo>,
     private readonly jwtService: JwtService,
+    private mailService: MailService,
   ) {}
 
   async findUser(clientEmail: string) {
@@ -66,7 +68,7 @@ export class InfoService {
           clientInfo: crateClientInfo,
         }),
       );
-
+      await this.mailService.sendUserConfirmation();
       return { ok: true, token: "dsdsf" };
     } catch (error) {
       return { ok: false, error };
