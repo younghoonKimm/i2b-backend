@@ -21,17 +21,13 @@ export class InfoEntity extends CommonEntitiy {
   @IsEnum(StatusStep)
   status: StatusStep;
 
-  @Column()
-  @IsString()
-  clientEmail: string;
-
   @Column({ nullable: true, select: false })
   @IsString()
   @Length(5)
   password?: string;
 
   @OneToOne(() => ClientInfo, (clientInfo) => clientInfo.info, {
-    nullable: false,
+    nullable: true,
     onDelete: "CASCADE",
     eager: true,
   })

@@ -63,4 +63,11 @@ import { MailModule } from "./mail/mail.module";
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(JWTMiddlewares).forRoutes({
+      path: '/info',
+      method:RequestMethod.POST
+    })
+  }
+}

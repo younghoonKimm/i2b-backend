@@ -32,16 +32,16 @@ export class InfoService {
     return user;
   }
 
-  async findById(id: number): Promise<InfoDto> {
-    return this.info.findOne({ id });
+  async findById(id: string): Promise<InfoDto> {
+    return await this.info.findOne({ id });
   }
 
-  async saveInfo(infoData: InfoDto): Promise<ClientInfoOutput> {
+  async saveInfo(infoData: InfoDto, id: string): Promise<ClientInfoOutput> {
     try {
-      const { clientEmail, password, clientInfo } = infoData;
+      const { clientInfo } = infoData;
 
       const exists = await this.info.findOne(
-        { clientEmail },
+        { id },
         { relations: [...infoNameArray] },
       );
 
@@ -53,23 +53,58 @@ export class InfoService {
           ...clientInfo,
         });
 
-        return { ok: true, token: "ischanged" };
+        await this.info.save(exists);
+
+        const token = this.jwtService.sign({ id: exists.id });
+        return { ok: true, token };
+      } else {
+        return { ok: false, error: "오류" };
       }
+
+      // const crateClientInfo = await this.clientInfo.save(
+      //   this.clientInfo.create(clientInfo),
+      // );
+
+      // const newInfoData = await this.info.save(
+      //   this.info.create({
+      //     status: 1, //will be just status.
+      //     password,
+      //     clientInfo: crateClientInfo,
+      //   }),
+      // );
+      // const token = this.jwtService.sign({ id: newInfoData.id });
+      // console.log(token);
+      // await this.mailService.sendToClient();
+      // return { ok: true, token };
+    } catch (error) {
+      return { ok: false, error };
+    }
+  }
+
+  async createInfo(infoData: InfoDto): Promise<ClientInfoOutput> {
+    try {
+      const { clientInfo, baseInfo, detailInfo, password } = infoData;
 
       const crateClientInfo = await this.clientInfo.save(
         this.clientInfo.create(clientInfo),
       );
 
+      const crateBaseInfo =
+        baseInfo && (await this.baseInfo.save(this.baseInfo.create(baseInfo)));
+
       const newInfoData = await this.info.save(
         this.info.create({
           status: 1, //will be just status.
-          clientEmail,
           password,
           clientInfo: crateClientInfo,
+          baseInfo: crateBaseInfo,
         }),
       );
-      await this.mailService.sendUserConfirmation();
-      return { ok: true, token: "dsdsf" };
+      const token = this.jwtService.sign({ id: newInfoData.id });
+
+      await this.mailService.sendToClient();
+
+      return { ok: true, token };
     } catch (error) {
       return { ok: false, error };
     }

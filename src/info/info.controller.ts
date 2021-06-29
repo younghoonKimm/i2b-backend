@@ -1,5 +1,6 @@
-import { Controller, Get, Post, Body } from "@nestjs/common";
+import { Controller, Get, Post, Body, Req } from "@nestjs/common";
 import { ClientInfoDto } from "./dto/client-info.dto";
+
 import { InfoService } from "./info.service";
 import { InfoDto } from "src/common/dto/info.dto";
 
@@ -12,8 +13,13 @@ export class InfoController {
   }
 
   @Post()
-  postFirstInfo(@Body() infoData: InfoDto) {
-    return this.infoService.saveInfo(infoData);
+  postFirstInfo(@Body() infoData: InfoDto, @Req() req: any) {
+    console.log(infoData);
+    const hasId = req.infoId;
+    if (hasId) {
+      return this.infoService.saveInfo(infoData, hasId);
+    }
+    return this.infoService.createInfo(infoData);
   }
 
   @Post()
