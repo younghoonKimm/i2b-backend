@@ -22,7 +22,7 @@ export class MailService {
       to: "choosey_@naver.com",
       from: '"올리브스톤" <dev@olivestonelab.com>',
       subject: "올리브스톤입니다",
-      template: "./mail", // `.hbs` extension is appended automatically
+      template: "./mail",
       context: {
         name: "kim",
       },

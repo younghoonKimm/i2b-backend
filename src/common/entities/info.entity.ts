@@ -4,8 +4,8 @@ import { IsString, IsEnum, Length } from "class-validator";
 import * as bcrypt from "bcrypt";
 
 import { InternalServerErrorException } from "@nestjs/common";
-import { ClientInfo } from "src/info/entities/client-info.entity";
-import { BaseInfo } from "src/info/entities/base-info.entity";
+import { ClientInfoEntity } from "src/info/entities/client-info.entity";
+import { BaseInfoEntity } from "src/info/entities/base-info.entity";
 import { DetailInfo } from "src/info/entities/detail-info.entity";
 
 enum StatusStep {
@@ -26,21 +26,25 @@ export class InfoEntity extends CommonEntitiy {
   @Length(5)
   password?: string;
 
-  @OneToOne(() => ClientInfo, (clientInfo) => clientInfo.info, {
-    nullable: true,
-    onDelete: "CASCADE",
-    eager: true,
-  })
+  @OneToOne(
+    () => ClientInfoEntity,
+    (clientInfoEntity) => clientInfoEntity.info,
+    {
+      nullable: true,
+      onDelete: "CASCADE",
+      eager: true,
+    },
+  )
   @JoinColumn()
-  clientInfo: ClientInfo;
+  clientInfo: ClientInfoEntity;
 
-  @OneToOne(() => BaseInfo, (baseInfo) => baseInfo.info, {
+  @OneToOne(() => BaseInfoEntity, (baseInfo) => baseInfo.info, {
     nullable: true,
     onDelete: "CASCADE",
     eager: true,
   })
   @JoinColumn()
-  baseInfo: BaseInfo;
+  baseInfo: BaseInfoEntity;
 
   @OneToOne(() => DetailInfo, (baseInfo) => baseInfo.info, {
     nullable: true,

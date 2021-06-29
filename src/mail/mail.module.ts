@@ -6,29 +6,6 @@ import { MailModuleOptions } from "./mail.interface";
 import { CONFIG_OPTIONS } from "../jwt/jwt.constants";
 import { join } from "path";
 
-// @Module({
-//   imports: [
-//     MailerModule.forRoot({
-//       transport: {
-//         host: "smtps.hiworks.com",
-//         secure: false,
-//         auth: {
-//           user: "support@olivestonelab.com",
-//           pass: "dhfflqmtmxhs!1",
-//         },
-//       },
-//       template: {
-//         dir: join(__dirname, "templates"),
-//         adapter: new HandlebarsAdapter(), // or new PugAdapter() or new EjsAdapter()
-//         options: {
-//           strict: true,
-//         },
-//       },
-//     }),
-//   ],
-//   providers: [MailService],
-//   exports: [MailService],
-// })
 @Module({})
 @Global()
 export class MailModule {
@@ -46,7 +23,7 @@ export class MailModule {
           },
           template: {
             dir: join(__dirname, "templates"),
-            adapter: new HandlebarsAdapter(), // or new PugAdapter() or new EjsAdapter()
+            adapter: new HandlebarsAdapter(), //Pug나 ejs 사용 가능
             options: {
               strict: true,
             },

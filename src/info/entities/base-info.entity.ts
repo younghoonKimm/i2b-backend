@@ -3,7 +3,7 @@ import { IsString, IsNumber, Length } from "class-validator";
 import { InfoEntity } from "src/common/entities/info.entity";
 
 @Entity()
-export class BaseInfo {
+export class BaseInfoEntity {
   @PrimaryGeneratedColumn()
   id: number;
 

@@ -4,22 +4,14 @@ import {
   UpdateDateColumn,
   BeforeInsert,
 } from "typeorm";
-import { v4 as uuidv4 } from "uuid";
-
 
 export class CommonEntitiy {
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn("uuid")
   id: string;
-  
 
   @CreateDateColumn()
   createdAt: Date;
 
   @UpdateDateColumn()
   updateAt: Date;
-
-  @BeforeInsert()
-  saltId():void {
-    this.id = uuidv4();
-  }
 }

@@ -2,12 +2,12 @@ import { Injectable } from "@nestjs/common";
 
 import { InfoEntity } from "../common/entities/info.entity";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Repository, createConnection } from "typeorm";
-import { ClientInfo } from "./entities/client-info.entity";
+import { Repository } from "typeorm";
+import { ClientInfoEntity } from "./entities/client-info.entity";
 import { ClientInfoDto, ClientInfoOutput } from "./dto/client-info.dto";
 import { InfoDto } from "src/common/dto/info.dto";
 import { JwtService } from "src/jwt/jwt.service";
-import { BaseInfo } from "./entities/base-info.entity";
+import { BaseInfoEntity } from "./entities/base-info.entity";
 import { MailService } from "src/mail/mail.service";
 
 const infoNameArray = ["clientInfo", "baseInfo"];
@@ -16,10 +16,10 @@ const infoNameArray = ["clientInfo", "baseInfo"];
 export class InfoService {
   constructor(
     @InjectRepository(InfoEntity) private readonly info: Repository<InfoEntity>,
-    @InjectRepository(ClientInfo)
-    private readonly clientInfo: Repository<ClientInfo>,
-    @InjectRepository(BaseInfo)
-    private readonly baseInfo: Repository<BaseInfo>,
+    @InjectRepository(ClientInfoEntity)
+    private readonly clientInfo: Repository<ClientInfoEntity>,
+    @InjectRepository(BaseInfoEntity)
+    private readonly baseInfo: Repository<BaseInfoEntity>,
     private readonly jwtService: JwtService,
     private mailService: MailService,
   ) {}
@@ -60,22 +60,6 @@ export class InfoService {
       } else {
         return { ok: false, error: "오류" };
       }
-
-      // const crateClientInfo = await this.clientInfo.save(
-      //   this.clientInfo.create(clientInfo),
-      // );
-
-      // const newInfoData = await this.info.save(
-      //   this.info.create({
-      //     status: 1, //will be just status.
-      //     password,
-      //     clientInfo: crateClientInfo,
-      //   }),
-      // );
-      // const token = this.jwtService.sign({ id: newInfoData.id });
-      // console.log(token);
-      // await this.mailService.sendToClient();
-      // return { ok: true, token };
     } catch (error) {
       return { ok: false, error };
     }

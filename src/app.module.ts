@@ -14,12 +14,13 @@ import { AdminModule } from "./admin/admin.module";
 import { InfoModule } from "./info/info.module";
 import { CommonModule } from "./common/common.module";
 import { InfoEntity } from "./common/entities/info.entity";
-import { ClientInfo } from "./info/entities/client-info.entity";
-import { BaseInfo } from "./info/entities/base-info.entity";
+import { ClientInfoEntity } from "./info/entities/client-info.entity";
+import { BaseInfoEntity } from "./info/entities/base-info.entity";
 import { DetailInfo } from "./info/entities/detail-info.entity";
 import { JWTMiddlewares } from "./jwt/jwt.middlewares";
 import { JwtModule } from "./jwt/jwt.module";
 import { MailModule } from "./mail/mail.module";
+import { AdminInfoEntity } from "./admin/entities/admin-info.entity";
 
 @Module({
   imports: [
@@ -44,7 +45,13 @@ import { MailModule } from "./mail/mail.module";
       username: process.env.DB_USERNAME,
       password: process.env.DB_PASSWORD,
       database: process.env.DB_NAME,
-      entities: [InfoEntity, ClientInfo, BaseInfo, DetailInfo],
+      entities: [
+        InfoEntity,
+        ClientInfoEntity,
+        BaseInfoEntity,
+        DetailInfo,
+        AdminInfoEntity,
+      ],
       synchronize: process.env.NODE_ENV !== "prod",
       logging: process.env.NODE_ENV !== "prod",
     }),
@@ -66,8 +73,8 @@ import { MailModule } from "./mail/mail.module";
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer.apply(JWTMiddlewares).forRoutes({
-      path: '/info',
-      method:RequestMethod.POST
-    })
+      path: "/info",
+      method: RequestMethod.POST,
+    });
   }
 }

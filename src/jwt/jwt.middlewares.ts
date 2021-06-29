@@ -14,7 +14,6 @@ export class JWTMiddlewares implements NestMiddleware {
 
         if (typeof decoded === "object" && decoded.hasOwnProperty("id")) {
           const id = decoded["id"];
-          // const info = await this.infoService.findById(id);
 
           req["infoId"] = id;
         }
@@ -25,12 +24,3 @@ export class JWTMiddlewares implements NestMiddleware {
     next();
   }
 }
-
-// export function JWTMiddlewares(
-//   req: Request,
-//   res: Response,
-//   next: NextFunction,
-// ) {
-//   console.log(req.headers);
-//   next();
-// }

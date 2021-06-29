@@ -1,16 +1,8 @@
-import {
-  IsString,
-  IsNumber,
-  IsOptional,
-  Length,
-  IsBoolean,
-} from "class-validator";
-import { PickType } from "@nestjs/swagger";
-import { ClientInfo } from "../entities/client-info.entity";
+import { IsString, Length, IsBoolean } from "class-validator";
+import { ClientInfoEntity } from "../entities/client-info.entity";
 import { Column } from "typeorm";
-import { isError } from "joi";
 
-export class ClientInfoDto extends ClientInfo {
+export class ClientInfoDto extends ClientInfoEntity {
   @Column({ nullable: true, select: false })
   @IsString()
   @Length(5)
