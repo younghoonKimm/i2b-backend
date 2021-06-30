@@ -15,7 +15,6 @@ export class AdminService {
     @InjectRepository(AdminInfoEntity)
     private readonly adminInfo: Repository<AdminInfoEntity>,
     private readonly jwtService: JwtService,
-    private readonly authService: AuthService,
   ) {}
   async createAdminUser(
     userData: AdminInfoInputDto,

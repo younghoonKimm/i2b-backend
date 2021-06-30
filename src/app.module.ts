@@ -40,6 +40,9 @@ import { JWTMiddlewares } from "./middlewares/jwt.middlewares";
         DB_PASSWORD: Joi.string().required(),
         DB_NAME: Joi.string().required(),
         PRIVATE_KEY: Joi.string().required(),
+        MAIL_USER: Joi.string().required(),
+        MAIL_PASSWORD: Joi.string().required(),
+        MAIL_HOST: Joi.string().required(),
       }),
     }),
     TypeOrmModule.forRoot({
@@ -68,7 +71,6 @@ import { JWTMiddlewares } from "./middlewares/jwt.middlewares";
       pass: process.env.MAIL_PASSWORD,
       host: process.env.MAIL_HOST,
     }),
-    AuthMoudle.forRoot(),
     AdminModule,
     InfoModule,
     CommonModule,
