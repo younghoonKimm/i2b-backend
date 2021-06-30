@@ -21,6 +21,9 @@ import { JWTMiddlewares } from "./jwt/jwt.middlewares";
 import { JwtModule } from "./jwt/jwt.module";
 import { MailModule } from "./mail/mail.module";
 import { AdminInfoEntity } from "./admin/entities/admin-info.entity";
+import { ManageMentModule } from "./management/management.module";
+import { ManageMentCategoryEntity } from "./management/entities/category.entity";
+import { AuthMoudle } from "./auth/auth.module";
 
 @Module({
   imports: [
@@ -51,6 +54,7 @@ import { AdminInfoEntity } from "./admin/entities/admin-info.entity";
         BaseInfoEntity,
         DetailInfo,
         AdminInfoEntity,
+        ManageMentCategoryEntity,
       ],
       synchronize: process.env.NODE_ENV !== "prod",
       logging: process.env.NODE_ENV !== "prod",
@@ -63,9 +67,11 @@ import { AdminInfoEntity } from "./admin/entities/admin-info.entity";
       pass: process.env.MAIL_PASSWORD,
       host: process.env.MAIL_HOST,
     }),
+    AuthMoudle.forRoot(),
     AdminModule,
     InfoModule,
     CommonModule,
+    ManageMentModule,
   ],
   controllers: [AppController],
   providers: [AppService],

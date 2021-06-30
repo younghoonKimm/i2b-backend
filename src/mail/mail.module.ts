@@ -3,7 +3,7 @@ import { HandlebarsAdapter } from "@nestjs-modules/mailer/dist/adapters/handleba
 import { Module, Global, DynamicModule } from "@nestjs/common";
 import { MailService } from "./mail.service";
 import { MailModuleOptions } from "./mail.interface";
-import { CONFIG_OPTIONS } from "../jwt/jwt.constants";
+import { CONFIG_OPTIONS } from "src/common/common.constants";
 import { join } from "path";
 
 @Module({})

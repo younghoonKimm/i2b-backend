@@ -29,8 +29,6 @@ export class AdminController {
     @AdminAuthUser() authUser: string,
     @Body() adminEditInput: AdminEditInput,
   ) {
-    const decoded = this.jwtService.verify(authUser.toString());
-
-    return this.adminService.editAdminUser(decoded.id, adminEditInput);
+    return this.adminService.editAdminUser(authUser, adminEditInput);
   }
 }
