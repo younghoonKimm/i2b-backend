@@ -1,7 +1,9 @@
-import { Controller, Get, Post, Body, Req } from "@nestjs/common";
+import { Controller, Get, Post, Body, Req, UseGuards } from "@nestjs/common";
 import { ClientInfoDto } from "./dto/client-info.dto";
 import { InfoService } from "./info.service";
 import { InfoDto } from "src/common/dto/info.dto";
+import { HasID } from "src/middlewares/hasid.middleware";
+import { Token } from "src/decorator/admin.decorator";
 
 @Controller("info")
 export class InfoController {
@@ -11,11 +13,11 @@ export class InfoController {
     return this.infoService.findUser(clientEmail);
   }
 
+  @UseGuards(HasID)
   @Post()
-  postFirstInfo(@Body() infoData: InfoDto, @Req() req: any) {
-    const hasId = req.infoId;
-    if (hasId) {
-      return this.infoService.saveInfo(infoData, hasId);
+  postFirstInfo(@Token() token: any, @Body() infoData: InfoDto) {
+    if (token) {
+      return this.infoService.saveInfo(infoData, token.id);
     }
     return this.infoService.createInfo(infoData);
   }

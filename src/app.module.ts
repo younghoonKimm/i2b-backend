@@ -17,13 +17,14 @@ import { InfoEntity } from "./common/entities/info.entity";
 import { ClientInfoEntity } from "./info/entities/client-info.entity";
 import { BaseInfoEntity } from "./info/entities/base-info.entity";
 import { DetailInfo } from "./info/entities/detail-info.entity";
-import { JWTMiddlewares } from "./jwt/jwt.middlewares";
+
 import { JwtModule } from "./jwt/jwt.module";
 import { MailModule } from "./mail/mail.module";
 import { AdminInfoEntity } from "./admin/entities/admin-info.entity";
 import { ManageMentModule } from "./management/management.module";
 import { ManageMentCategoryEntity } from "./management/entities/category.entity";
 import { AuthMoudle } from "./auth/auth.module";
+import { JWTMiddlewares } from "./middlewares/jwt.middlewares";
 
 @Module({
   imports: [

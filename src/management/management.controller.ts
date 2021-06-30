@@ -5,44 +5,30 @@ import { AdminAuthUser } from "src/auth/auth-user.decorator";
 import { JwtService } from "src/jwt/jwt.service";
 import { ManageMentCategoryDto } from "./dto/category.dto";
 import { AuthService } from "src/auth/auth.service";
+import { AuthGuard } from "src/middlewares/auth.middleware";
+import { Token } from "src/decorator/admin.decorator";
 
 @Controller("mng")
 export class MangaeMentController {
-  constructor(
-    private manageMentService: ManagementService,
-    private readonly authService: AuthService,
-  ) {}
+  constructor(private manageMentService: ManagementService) {}
 
+  @UseGuards(AuthGuard)
   @Get("/categories")
-  @UseGuards(AdminAuthGuards)
-  async getCategoryParent(@AdminAuthUser() authUser: string) {
-    const user = await this.authService.adminTokenValidate(authUser);
-    if (!user) return false;
+  async getCategoryParent() {
     return this.manageMentService.getAllParentData();
   }
 
+  @UseGuards(AuthGuard)
   @Get("/categories/:seqNo?")
-  @UseGuards(AdminAuthGuards)
-  async getCategoryChildren(
-    @AdminAuthUser() authUser: string,
-    @Param("seqNo") seqNo?: any,
-  ) {
-    const user = await this.authService.adminTokenValidate(authUser);
-    if (!user) return false;
+  async getCategoryChildren(@Param("seqNo") seqNo?: any) {
     return this.manageMentService.getChildData(seqNo);
   }
-
-  @Post("/categories/:seqNo?")
-  @UseGuards(AdminAuthGuards)
+  @UseGuards(AuthGuard)
   async saveCategoryData(
-    @AdminAuthUser() authUser: string,
     @Body()
     data: ManageMentCategoryDto,
     @Param("seqNo") seqNo?: any,
   ) {
-    const user = await this.authService.adminTokenValidate(authUser);
-    if (!user) return false;
-    console.log(data);
     return this.manageMentService.saveCategoryData(data, seqNo);
   }
 }

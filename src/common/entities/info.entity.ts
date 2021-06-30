@@ -21,35 +21,32 @@ export class InfoEntity extends CommonEntitiy {
   @IsEnum(StatusStep)
   status: StatusStep;
 
-  @Column({ nullable: true, select: false })
+  @Column()
+  @IsString()
+  clientEmail: string;
+
+  @Column({ nullable: true })
   @IsString()
   @Length(5)
   password?: string;
 
-  @OneToOne(
-    () => ClientInfoEntity,
-    (clientInfoEntity) => clientInfoEntity.info,
-    {
-      nullable: true,
-      onDelete: "CASCADE",
-      eager: true,
-    },
-  )
+  @OneToOne(() => ClientInfoEntity, (clientInfo) => clientInfo.info, {
+    nullable: false,
+    onDelete: "SET NULL",
+  })
   @JoinColumn()
   clientInfo: ClientInfoEntity;
 
   @OneToOne(() => BaseInfoEntity, (baseInfo) => baseInfo.info, {
     nullable: true,
-    onDelete: "CASCADE",
-    eager: true,
+    onDelete: "SET NULL",
   })
   @JoinColumn()
   baseInfo: BaseInfoEntity;
 
   @OneToOne(() => DetailInfo, (baseInfo) => baseInfo.info, {
     nullable: true,
-    onDelete: "CASCADE",
-    eager: true,
+    onDelete: "SET NULL",
   })
   @JoinColumn()
   detailInfo: DetailInfo;
