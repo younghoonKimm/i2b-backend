@@ -19,6 +19,10 @@ export class AdminLoginOutput {
 
   @Column({ nullable: true })
   @IsString()
+  id?: string;
+
+  @Column({ nullable: true })
+  @IsString()
   token?: string;
 
   @Column()
