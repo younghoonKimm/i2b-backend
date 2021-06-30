@@ -48,7 +48,10 @@ export class AdminService {
     authUser: string,
     { adminEmail, adminPw }: AdminEditInput,
   ) {
-    const user = await this.authService.adminTokenValidate(authUser);
+    const decoded = this.jwtService.verify(authUser.toString());
+    const user = await this.adminInfo.findOne({
+      id: decoded.id,
+    });
 
     if (!user) return { ok: false };
 

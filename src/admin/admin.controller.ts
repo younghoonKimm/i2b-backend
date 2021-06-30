@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Put } from "@nestjs/common";
+import { Controller, Post, Body, Put, UseGuards } from "@nestjs/common";
 import { AdminService } from "./admin.service";
 import { AdminInfoInputDto } from "./dto/admin-info.dto";
 import { AdminLoginInput } from "./dto/admin-login.dto";
@@ -6,6 +6,8 @@ import { AdminEditInput } from "./dto/admin-edit.dto";
 import { AdminAuthUser } from "src/auth/auth-user.decorator";
 import { AdminInfoEntity } from "./entities/admin-info.entity";
 import { JwtService } from "src/jwt/jwt.service";
+import { AuthGuard } from "src/middlewares/auth.middleware";
+import { Token } from "src/decorator/admin.decorator";
 
 @Controller("admin")
 export class AdminController {
@@ -24,11 +26,9 @@ export class AdminController {
     return this.adminService.loginAdminUser(adminLoginInput);
   }
 
+  @UseGuards(AuthGuard)
   @Put("/login")
-  editAdminUser(
-    @AdminAuthUser() authUser: string,
-    @Body() adminEditInput: AdminEditInput,
-  ) {
-    return this.adminService.editAdminUser(authUser, adminEditInput);
+  editAdminUser(@Token() token: any, @Body() adminEditInput: AdminEditInput) {
+    return this.adminService.editAdminUser(token, adminEditInput);
   }
 }

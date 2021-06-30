@@ -79,6 +79,7 @@ export class InfoService {
       const newInfoData = await this.info.save(
         this.info.create({
           status: 1, //will be just status.
+          clientEmail: clientInfo.clientEmail,
           password,
           clientInfo: crateClientInfo,
           baseInfo: crateBaseInfo,
