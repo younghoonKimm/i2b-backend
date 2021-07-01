@@ -1,5 +1,5 @@
-import { Column, Entity, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm";
-import { IsString, IsNumber, IsBoolean, IsArray } from "class-validator";
+import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { IsString, IsNumber } from "class-validator";
 
 export class CategoryEntity {
   @PrimaryGeneratedColumn("uuid")

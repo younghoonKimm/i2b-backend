@@ -23,7 +23,9 @@ export class MangaeMentController {
   async getCategoryChildren(@Param("seqNo") seqNo?: any) {
     return this.manageMentService.getChildData(seqNo);
   }
+
   @UseGuards(AuthGuard)
+  @Post("/categories/:seqNo?")
   async saveCategoryData(
     @Body()
     data: ManageMentCategoryDto,
