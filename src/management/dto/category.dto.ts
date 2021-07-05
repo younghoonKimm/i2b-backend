@@ -1,10 +1,9 @@
 import { CategoryEntity } from "../entities/category.entity";
 import { PrimaryGeneratedColumn, Column } from "typeorm";
 
-export class ManageMentCategoryDto extends CategoryEntity {
+export class ManageMentCategoryDto {
   @PrimaryGeneratedColumn("uuid")
   seqNo: string;
 
-  @Column("jsonb", { default: [] })
-  children: CategoryEntity[];
+  children: any;
 }

@@ -1,5 +1,11 @@
-import { Column, Entity, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm";
-import { IsString, IsNumber, IsBoolean, IsArray } from "class-validator";
+import {
+  Column,
+  Entity,
+  PrimaryGeneratedColumn,
+  OneToMany,
+  ManyToOne,
+} from "typeorm";
+import { IsString, IsNumber } from "class-validator";
 
 export class CategoryEntity {
   @PrimaryGeneratedColumn("uuid")
@@ -18,7 +24,18 @@ export class CategoryEntity {
 }
 
 @Entity()
+export class ManageMentCategoryEntites extends CategoryEntity {
+  @OneToMany(() => ManageMentCategoryEntity, (category) => category.parent, {
+    onDelete: "CASCADE",
+  })
+  children: ManageMentCategoryEntity[];
+}
+
+@Entity()
 export class ManageMentCategoryEntity extends CategoryEntity {
+  @ManyToOne(() => ManageMentCategoryEntites, (parent) => parent.children)
+  parent: ManageMentCategoryEntites;
+
   @Column("jsonb", { default: [] })
   children: CategoryEntity[];
 }

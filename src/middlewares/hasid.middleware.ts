@@ -8,10 +8,8 @@ export class HasID implements CanActivate {
   public validateToken(token: string) {
     try {
       const isToken = this.jwtServie.verify(token.toString());
-      console.log(isToken);
       return isToken;
     } catch (error) {
-      console.log(error);
       return false;
     }
   }
