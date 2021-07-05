@@ -17,6 +17,18 @@ export class MailService {
     });
   }
 
+  async sendToAdminVerfiy() {
+    await this.mailerService.sendMail({
+      to: "choosey_@naver.com",
+      from: '"올리브스톤" <dev@olivestonelab.com>',
+      subject: "올리브스톤입니다",
+      template: "./mail",
+      context: {
+        name: "kim",
+      },
+    });
+  }
+
   async sendToAdminManagertoDownloadFile() {
     await this.mailerService.sendMail({
       to: "choosey_@naver.com",

@@ -22,7 +22,10 @@ import { JwtModule } from "./jwt/jwt.module";
 import { MailModule } from "./mail/mail.module";
 import { AdminInfoEntity } from "./admin/entities/admin-info.entity";
 import { ManageMentModule } from "./management/management.module";
-import { ManageMentCategoryEntity } from "./management/entities/category.entity";
+import {
+  ManageMentCategoryEntites,
+  ManageMentCategoryEntity,
+} from "./management/entities/category.entity";
 import { AuthMoudle } from "./auth/auth.module";
 import { JWTMiddlewares } from "./middlewares/jwt.middlewares";
 
@@ -58,6 +61,7 @@ import { JWTMiddlewares } from "./middlewares/jwt.middlewares";
         BaseInfoEntity,
         DetailInfo,
         AdminInfoEntity,
+        ManageMentCategoryEntites,
         ManageMentCategoryEntity,
       ],
       synchronize: process.env.NODE_ENV !== "prod",
