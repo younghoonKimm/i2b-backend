@@ -19,3 +19,21 @@ export class AdminInfoInputDto {
   @IsEmail()
   adminEmail: string;
 }
+
+export class AdminMeOutPutDto {
+  @Column({ nullable: true })
+  @IsString()
+  adminId?: string;
+
+  @Column({ nullable: true })
+  @IsString()
+  adminName?: string;
+
+  @Column({ nullable: true })
+  @IsEmail()
+  adminEmail?: string;
+
+  @Column({ nullable: true })
+  @IsString()
+  error?: string;
+}

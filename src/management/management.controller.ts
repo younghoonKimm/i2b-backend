@@ -28,9 +28,15 @@ export class MangaeMentController {
   @Post("/categories/:seqNo?")
   async saveCategoryData(
     @Body()
-    data: ManageMentCategoryDto,
+    data: ManageMentCategoryDto[],
     @Param("seqNo") seqNo?: any,
   ) {
     return this.manageMentService.saveCategoryData(data, seqNo);
+  }
+
+  @UseGuards(AuthGuard)
+  @Get("/categories/:seqNo/Price")
+  async getPriceData(@Param("seqNo") seqNo: string) {
+    return this.manageMentService.getPriceData(seqNo);
   }
 }

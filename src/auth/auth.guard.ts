@@ -8,6 +8,7 @@ export class AdminAuthGuards implements CanActivate {
   ): boolean | Promise<boolean> | Observable<boolean> {
     const request = context.switchToHttp().getRequest();
     const token = request.headers.authorization;
+    console.log(token);
     if (!token) {
       return false;
     }

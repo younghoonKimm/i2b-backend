@@ -4,6 +4,7 @@ import {
   PrimaryGeneratedColumn,
   OneToMany,
   ManyToOne,
+  OneToOne,
 } from "typeorm";
 import { IsString, IsNumber } from "class-validator";
 
@@ -27,6 +28,7 @@ export class CategoryEntity {
 export class ManageMentCategoryEntites extends CategoryEntity {
   @OneToMany(() => ManageMentCategoryEntity, (category) => category.parent, {
     onDelete: "CASCADE",
+    eager: true,
   })
   children: ManageMentCategoryEntity[];
 }
