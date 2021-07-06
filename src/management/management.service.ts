@@ -2,7 +2,6 @@ import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import {
   ManageMentCategoryEntites,
-  CategoryEntity,
   ManageMentCategoryEntity,
 } from "./entities/category.entity";
 import { Repository } from "typeorm";
@@ -10,13 +9,28 @@ import { ManageMentCategoryDto } from "./dto/category.dto";
 import { v4 as uuidv4 } from "uuid";
 
 const mngValidateHiddenSeqNo = (array) => {
-  return array.reduce((acc, cur) => {
-    if (cur.isHidden === undefined || cur.isHidden === null)
-      cur.isHidden = false;
-    if (cur.seqNo === undefined || cur.seqNo === null) cur.seqNo = uuidv4();
-    acc.push(cur);
-    return acc;
-  }, []);
+  if (array.length > 0) {
+    return array.reduce((acc, cur) => {
+      if (cur.isHidden === undefined || cur.isHidden === null)
+        cur.isHidden = false;
+      if (cur.seqNo === undefined || cur.seqNo === null) cur.seqNo = uuidv4();
+      acc.push(cur);
+      return acc;
+    }, []);
+  }
+};
+
+const createEntity = async (arr, parent, entity) => {
+  for (let i = 0; i < arr.length; i++) {
+    const nowData = arr[i];
+    await entity.save(
+      entity.create({
+        ...nowData,
+        parent: parent,
+        children: mngValidateHiddenSeqNo(nowData.children),
+      }),
+    );
+  }
 };
 
 @Injectable()
@@ -33,37 +47,52 @@ export class ManagementService {
   }
 
   async getChildData(seqNo: string) {
-    const childData = await this.ManageMentCategoryEntites.findOne({ seqNo });
+    const childData = await this.ManageMentCategoryEntites.findOne(
+      { seqNo },
+      { relations: ["children"] },
+    );
 
-    if (childData) return [childData];
+    if (childData) return childData.children;
   }
 
-  async saveCategoryData(data: ManageMentCategoryDto, seqNo?: any) {
+  async saveCategoryData(data: ManageMentCategoryDto[], seqNo?: any) {
     if (seqNo) {
       const category = await this.ManageMentCategoryEntites.findOne(
         { seqNo },
         { relations: ["children"] },
       );
-      return category;
 
-      //   if (category) {
-      //     return await this.managementCategory.save(category);
-      //   }
-    }
+      const noSeqNo = data.filter((v) => v.seqNo === undefined);
 
-    const categoriesData = await this.ManageMentCategoryEntites.save(
-      this.ManageMentCategoryEntites.create(data),
-    );
+      // 기존 데이터 삭제 및 업데이트
+      category.children.reduce(async (_: any, cur: any) => {
+        const isCategory = data.find(
+          (children) => children.seqNo === cur.seqNo,
+        );
+        if (isCategory) {
+          await this.manageMentCategoryEntity.save({
+            ...cur,
+            ...isCategory,
+          });
+        } else {
+          await this.manageMentCategoryEntity.delete({
+            seqNo: cur.seqNo,
+          });
+        }
+      }, []);
 
-    for (let i = 0; i < data.children.length; i++) {
-      const nowData = data.children[i];
-      await this.manageMentCategoryEntity.save(
-        this.manageMentCategoryEntity.create({
-          ...nowData,
-          parent: categoriesData,
-          children: mngValidateHiddenSeqNo(nowData.children),
-        }),
+      await this.ManageMentCategoryEntites.save(category);
+
+      if (noSeqNo.length > 0) {
+        return createEntity(noSeqNo, category, this.manageMentCategoryEntity);
+      }
+    } else {
+      const categoriesData = await this.ManageMentCategoryEntites.save(
+        this.ManageMentCategoryEntites.create(data),
       );
+      return createEntity(data, categoriesData, this.manageMentCategoryEntity);
     }
   }
+
+  async getPriceData(seqNo: string) {}
 }

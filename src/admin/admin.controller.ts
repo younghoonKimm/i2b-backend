@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Put, UseGuards } from "@nestjs/common";
+import { Controller, Post, Body, Put, UseGuards, Get } from "@nestjs/common";
 import { AdminService } from "./admin.service";
 import { AdminInfoInputDto } from "./dto/admin-info.dto";
 import { AdminLoginInput } from "./dto/admin-login.dto";
@@ -27,8 +27,14 @@ export class AdminController {
   }
 
   @UseGuards(AuthGuard)
-  @Put("/login")
+  @Put("/me")
   editAdminUser(@Token() token: any, @Body() adminEditInput: AdminEditInput) {
     return this.adminService.editAdminUser(token, adminEditInput);
+  }
+
+  @UseGuards(AuthGuard)
+  @Get("/me")
+  getUserInfo(@Token() token: any) {
+    return this.adminService.getUserInfo(token);
   }
 }

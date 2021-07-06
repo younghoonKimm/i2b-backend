@@ -3,7 +3,7 @@ import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { AdminInfoEntity } from "./entities/admin-info.entity";
-import { AdminInfoInputDto } from "./dto/admin-info.dto";
+import { AdminInfoInputDto, AdminMeOutPutDto } from "./dto/admin-info.dto";
 import { AdminLoginInput, AdminLoginOutput } from "./dto/admin-login.dto";
 import { AdminEditInput } from "./dto/admin-edit.dto";
 import { JwtService } from "src/jwt/jwt.service";
@@ -63,5 +63,17 @@ export class AdminService {
       await this.adminInfo.save(user);
     }
     return { ok: true };
+  }
+
+  async getUserInfo(token: any): Promise<AdminMeOutPutDto> {
+    const user = await this.adminInfo.findOne({
+      id: token.id,
+    });
+    if (user) {
+      const { adminId, adminName, adminEmail } = user;
+      return { adminId, adminName, adminEmail };
+    } else {
+      return { error: "notfound" };
+    }
   }
 }
