@@ -39,4 +39,10 @@ export class MangaeMentController {
   async getPriceData(@Param("seqNo") seqNo: string) {
     return this.manageMentService.getPriceData(seqNo);
   }
+
+  @UseGuards(AuthGuard)
+  @Get("/mng/duedate")
+  async getDueDate(@Param("seqNo") seqNo: string) {
+    return this.manageMentService.getPriceData(seqNo);
+  }
 }

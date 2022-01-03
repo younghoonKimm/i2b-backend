@@ -5,7 +5,7 @@ import { JwtService } from "src/jwt/jwt.service";
 @Injectable()
 export class JWTMiddlewares implements NestMiddleware {
   constructor(private readonly jwtServie: JwtService) {}
-  async use(req: Request, res: Response, next: NextFunction) {
+  async use(req: Request, _: Response, next: NextFunction) {
     if ("authorization" in req.headers) {
       const token = req.headers["authorization"].replace("Bearer ", "");
 

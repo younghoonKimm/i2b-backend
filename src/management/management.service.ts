@@ -13,7 +13,7 @@ const mngValidateHiddenSeqNo = (array) => {
     return array.reduce((acc, cur) => {
       if (cur.isHidden === undefined || cur.isHidden === null)
         cur.isHidden = false;
-      if (cur.seqNo === undefined || cur.seqNo === null) cur.seqNo = uuidv4();
+      if (!cur.seqNo) cur.seqNo = uuidv4();
       acc.push(cur);
       return acc;
     }, []);
@@ -55,7 +55,7 @@ export class ManagementService {
     if (childData) return childData.children;
   }
 
-  async saveCategoryData(data: ManageMentCategoryDto[], seqNo?: any) {
+  async saveCategoryData(data: ManageMentCategoryDto[], seqNo?: string) {
     if (seqNo) {
       const category = await this.ManageMentCategoryEntites.findOne(
         { seqNo },
@@ -94,5 +94,12 @@ export class ManagementService {
     }
   }
 
-  async getPriceData(seqNo: string) {}
+  async getPriceData(seqNo: string) {
+    const category = await this.ManageMentCategoryEntites.findOne(
+      { seqNo },
+      { relations: ["children"] },
+    );
+
+    return category;
+  }
 }

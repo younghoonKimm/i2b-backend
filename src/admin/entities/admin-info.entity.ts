@@ -1,13 +1,13 @@
 import { Entity, Column, BeforeInsert, BeforeUpdate } from "typeorm";
 import { InternalServerErrorException } from "@nestjs/common";
-import { IsString, IsNumber, Length, IsEmail } from "class-validator";
+import { IsString, IsNumber, Length, IsEmail, IsEnum } from "class-validator";
 
 import * as bcrypt from "bcrypt";
 import { CommonEntitiy } from "src/common/entities/common.entity";
 
-enum adminRole {
-  system,
-  see,
+enum AdminRole {
+  System = "System",
+  Watch = "Watch",
 }
 
 @Entity()
@@ -20,6 +20,10 @@ export class AdminInfoEntity extends CommonEntitiy {
   @IsString()
   @Length(13, 30)
   adminPw: string;
+
+  @Column({ type: "enum", enum: AdminRole, default: AdminRole.Watch })
+  @IsEnum(AdminRole)
+  role: AdminRole;
 
   @Column()
   @IsString()
