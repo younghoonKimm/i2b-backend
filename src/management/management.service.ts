@@ -55,31 +55,32 @@ export class ManagementService {
     if (childData) return childData.children;
   }
 
-  async saveCategoryData(data: ManageMentCategoryDto[], seqNo?: string) {
+  async saveCategoryData({ children }: ManageMentCategoryDto, seqNo?: string) {
     if (seqNo) {
       const category = await this.ManageMentCategoryEntites.findOne(
         { seqNo },
         { relations: ["children"] },
       );
 
-      const noSeqNo = data.filter((v) => v.seqNo === undefined);
+      const noSeqNo = children.filter((v) => v.seqNo === undefined);
 
-      // 기존 데이터 삭제 및 업데이트
-      category.children.reduce(async (_: any, cur: any) => {
-        const isCategory = data.find(
-          (children) => children.seqNo === cur.seqNo,
-        );
-        if (isCategory) {
-          await this.manageMentCategoryEntity.save({
-            ...cur,
-            ...isCategory,
-          });
-        } else {
-          await this.manageMentCategoryEntity.delete({
-            seqNo: cur.seqNo,
-          });
+      if (category.children) {
+        for (let i = 0; i < category.children.length; i++) {
+          const isCategory = children.find(
+            (children) => children.seqNo === category.children[i].seqNo,
+          );
+          if (isCategory) {
+            await this.manageMentCategoryEntity.save({
+              ...category.children[i],
+              ...isCategory,
+            });
+          } else {
+            await this.manageMentCategoryEntity.delete({
+              seqNo: category.children[i].seqNo,
+            });
+          }
         }
-      }, []);
+      }
 
       await this.ManageMentCategoryEntites.save(category);
 
@@ -88,9 +89,13 @@ export class ManagementService {
       }
     } else {
       const categoriesData = await this.ManageMentCategoryEntites.save(
-        this.ManageMentCategoryEntites.create(data),
+        this.ManageMentCategoryEntites.create(children),
       );
-      return createEntity(data, categoriesData, this.manageMentCategoryEntity);
+      return createEntity(
+        children,
+        categoriesData,
+        this.manageMentCategoryEntity,
+      );
     }
   }
 

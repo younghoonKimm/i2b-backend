@@ -28,7 +28,7 @@ export class MangaeMentController {
   @Post("/categories/:seqNo?")
   async saveCategoryData(
     @Body()
-    data: ManageMentCategoryDto[],
+    data: ManageMentCategoryDto,
     @Param("seqNo") seqNo?: any,
   ) {
     return this.manageMentService.saveCategoryData(data, seqNo);
