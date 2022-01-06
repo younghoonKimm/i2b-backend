@@ -17,6 +17,7 @@ import { InfoEntity } from "./common/entities/info.entity";
 import { ClientInfoEntity } from "./info/entities/client-info.entity";
 import { BaseInfoEntity } from "./info/entities/base-info.entity";
 import { DetailInfo } from "./info/entities/detail-info.entity";
+import { DueDateEntity } from "./management/entities/dueDate.entity";
 
 import { JwtModule } from "./jwt/jwt.module";
 import { MailModule } from "./mail/mail.module";
@@ -63,6 +64,7 @@ import { JWTMiddlewares } from "./middlewares/jwt.middlewares";
         AdminInfoEntity,
         ManageMentCategoryEntites,
         ManageMentCategoryEntity,
+        DueDateEntity,
       ],
       synchronize: process.env.NODE_ENV !== "prod",
       logging: process.env.NODE_ENV !== "prod",
@@ -91,3 +93,10 @@ export class AppModule implements NestModule {
     });
   }
 }
+
+// this.adminService.createAdminUser({
+//   adminId: "admin",
+//   adminPw: "1234",
+//   adminEmail: "kxkm02@abc.com",
+//   adminName: "client",
+// });

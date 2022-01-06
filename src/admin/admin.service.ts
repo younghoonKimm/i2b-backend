@@ -19,8 +19,16 @@ export class AdminService {
   async createAdminUser(
     userData: AdminInfoInputDto,
   ): Promise<{ status: boolean }> {
-    await this.adminInfo.save(this.adminInfo.create(userData));
-    return { status: true };
+    const { adminId } = userData;
+    try {
+      const isAdmin = await this.adminInfo.findOne({ adminId });
+      if (isAdmin) {
+        return;
+      } else {
+        await this.adminInfo.save(this.adminInfo.create(userData));
+        return { status: true };
+      }
+    } catch {}
   }
 
   async loginAdminUser({

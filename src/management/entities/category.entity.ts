@@ -7,6 +7,7 @@ import {
   OneToOne,
 } from "typeorm";
 import { IsString, IsNumber } from "class-validator";
+import { array } from "joi";
 
 export class CategoryEntity {
   @PrimaryGeneratedColumn("uuid")
@@ -24,6 +25,61 @@ export class CategoryEntity {
   isHidden: boolean;
 }
 
+class PercentsDto {
+  @Column()
+  @IsNumber()
+  month: number;
+
+  @Column()
+  @IsNumber()
+  percentHigh: number;
+
+  @Column()
+  @IsNumber()
+  percentMid: number;
+
+  @Column()
+  @IsNumber()
+  percentLow: number;
+}
+
+class CategoryPriceDto {
+  @PrimaryGeneratedColumn("uuid")
+  dueSeqNo: string;
+
+  @Column()
+  @IsNumber()
+  month: number;
+
+  @Column()
+  @IsNumber()
+  highManPrice: number;
+
+  @Column()
+  @IsNumber()
+  highManCount: number;
+
+  @Column()
+  @IsNumber()
+  midManPrice: number;
+
+  @Column()
+  @IsNumber()
+  midManCount: number;
+
+  @Column()
+  @IsNumber()
+  lowManPrice: number;
+
+  @Column()
+  @IsNumber()
+  lowManCount: number;
+
+  @Column()
+  @IsString()
+  percent: PercentsDto[];
+}
+
 @Entity()
 export class ManageMentCategoryEntites extends CategoryEntity {
   @OneToMany(() => ManageMentCategoryEntity, (category) => category.parent, {
@@ -38,6 +94,9 @@ export class ManageMentCategoryEntity extends CategoryEntity {
   @ManyToOne(() => ManageMentCategoryEntites, (parent) => parent.children)
   parent: ManageMentCategoryEntites;
 
-  @Column("jsonb", { default: [] })
+  @Column("jsonb", { nullable: true })
+  price: CategoryPriceDto[];
+
+  @Column("jsonb", { nullable: true })
   children: CategoryEntity[];
 }
