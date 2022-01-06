@@ -10,7 +10,15 @@ import { Token } from "src/decorator/admin.decorator";
 
 @Controller("mng")
 export class MangaeMentController {
-  constructor(private manageMentService: ManagementService) {}
+  constructor(private manageMentService: ManagementService) {
+    // this.manageMentService.registerDueDate([3, 6, 12]);
+  }
+
+  @UseGuards(AuthGuard)
+  @Get("/duedate")
+  async getDueDate() {
+    return this.manageMentService.getAllDueDate();
+  }
 
   @UseGuards(AuthGuard)
   @Get("/categories")
@@ -41,8 +49,8 @@ export class MangaeMentController {
   }
 
   @UseGuards(AuthGuard)
-  @Get("/mng/duedate")
-  async getDueDate(@Param("seqNo") seqNo: string) {
-    return this.manageMentService.getPriceData(seqNo);
+  @Post("/categories/:seqNo/Price")
+  async setPriceData(@Param("seqNo") seqNo: string) {
+    return this.manageMentService.setPriceData(seqNo);
   }
 }
