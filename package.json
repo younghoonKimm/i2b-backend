@@ -30,7 +30,7 @@
     "@nestjs/config": "^0.6.3",
     "@nestjs/core": "^7.6.15",
     "@nestjs/platform-express": "^7.6.15",
-    "@nestjs/swagger": "^4.8.1",
+    "@nestjs/swagger": "^4.8.2",
     "@nestjs/typeorm": "^7.1.5",
     "@types/bcrypt": "^5.0.0",
     "@types/multer": "^1.4.6",
@@ -48,6 +48,7 @@
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
     "rxjs": "^6.6.6",
+    "swagger-ui-express": "^4.3.0",
     "typeorm": "^0.2.34",
     "typeorm-model-generator": "^0.4.5",
     "uuid": "^8.3.2"

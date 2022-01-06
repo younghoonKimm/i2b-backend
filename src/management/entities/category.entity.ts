@@ -4,10 +4,8 @@ import {
   PrimaryGeneratedColumn,
   OneToMany,
   ManyToOne,
-  OneToOne,
 } from "typeorm";
 import { IsString, IsNumber } from "class-validator";
-import { array } from "joi";
 
 export class CategoryEntity {
   @PrimaryGeneratedColumn("uuid")

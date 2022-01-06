@@ -9,6 +9,7 @@ import {
   ManageMentCategoryEntity,
 } from "./entities/category.entity";
 import { DueDateEntity } from "./entities/dueDate.entity";
+import { dueDateValue } from "src/config";
 
 const mngValidateHiddenSeqNo = (array) => {
   if (array.length > 0) {
@@ -22,7 +23,7 @@ const mngValidateHiddenSeqNo = (array) => {
   }
 };
 
-const createEntity = async (arr, parent, entity) => {
+const createEntity = async (arr, parent, entity, price) => {
   for (let i = 0; i < arr.length; i++) {
     const nowData = arr[i];
     await entity.save(
@@ -30,6 +31,7 @@ const createEntity = async (arr, parent, entity) => {
         ...nowData,
         parent: parent,
         children: mngValidateHiddenSeqNo(nowData.children),
+        price,
       }),
     );
   }
@@ -42,23 +44,19 @@ const percent = {
   percentLow: 0,
 };
 
-const emptyPriceArray = (array) => {
-  return array.reduce((acc: any, cur: any) => {
-    acc.push({
-      month: cur.projDueDateMonth,
-      highManPrice: 0,
-      highManCount: 0,
-      midManPrice: 0,
-      midManCount: 0,
-      lowManPrice: 0,
-      lowManCount: 0,
-      percent: new Array(cur.projDueDateMonth)
-        .fill(percent)
-        .map((value, index) => ({ ...value, month: index + 1 })),
-    });
-    return acc;
-  }, []);
+const defaultPrice = {
+  highManPrice: 0,
+  highManCount: 0,
+  midManPrice: 0,
+  midManCount: 0,
+  lowManPrice: 0,
+  lowManCount: 0,
 };
+
+const setPrecent = (length) =>
+  new Array(length)
+    .fill(percent)
+    .map((value, index) => ({ ...value, month: index + 1 }));
 
 @Injectable()
 export class ManagementService {
@@ -115,6 +113,48 @@ export class ManagementService {
       }
     }
   }
+  // [3,6,12]
+  emptyPriceArray() {
+    return dueDateValue.reduce((acc: any, cur: any) => {
+      acc.push({
+        month: cur,
+        ...defaultPrice,
+        precent: setPrecent(cur),
+      });
+      return acc;
+    }, []);
+  }
+
+  async registerPriceData(array: number[]) {
+    const category = await this.ManageMentCategoryEntites.find();
+
+    for (let k = 0; k < category.length; k++) {
+      for (let l = 0; l < category[k].children.length; l++) {
+        let newPrice = [];
+        for (let m = 0; m < array.length; m++) {
+          const keepPrice = category[k].children[l].price.find(
+            (priceData) => priceData.month === array[m],
+          );
+          if (keepPrice) {
+            newPrice = [...newPrice, keepPrice];
+          } else {
+            newPrice = [
+              ...newPrice,
+              {
+                month: array[m],
+                ...defaultPrice,
+                precent: setPrecent(array[m]),
+              },
+            ];
+          }
+          await this.manageMentCategoryEntity.save({
+            ...category[k].children[l],
+            price: newPrice,
+          });
+        }
+      }
+    }
+  }
 
   async getAllParentData() {
     return await this.ManageMentCategoryEntites.find();
@@ -159,16 +199,27 @@ export class ManagementService {
       await this.ManageMentCategoryEntites.save(category);
 
       if (noSeqNo.length > 0) {
-        return createEntity(noSeqNo, category, this.manageMentCategoryEntity);
+        const price = this.emptyPriceArray();
+
+        return createEntity(
+          noSeqNo,
+          category,
+          this.manageMentCategoryEntity,
+          price,
+        );
       }
     } else {
-      const categoriesData = await this.ManageMentCategoryEntites.save(
+      const categoriesData = this.ManageMentCategoryEntites.save(
         this.ManageMentCategoryEntites.create(children),
       );
+
+      const price = this.emptyPriceArray();
+
       return createEntity(
         children,
         categoriesData,
         this.manageMentCategoryEntity,
+        price,
       );
     }
   }
@@ -188,19 +239,7 @@ export class ManagementService {
       { relations: ["children"] },
     );
 
-    for (let i = 0; i < category.children.length; i++) {
-      const dueDates = await this.dueDateEntity.find();
-
-      const price = emptyPriceArray(dueDates);
-
-      await this.manageMentCategoryEntity.save(
-        this.manageMentCategoryEntity.create({
-          parent: category,
-          ...category.children[i],
-          price,
-        }),
-      );
-    }
+    for (let i = 0; i < category.children.length; i++) {}
 
     return category;
   }

@@ -7,11 +7,13 @@ import { ManageMentCategoryDto } from "./dto/category.dto";
 import { AuthService } from "src/auth/auth.service";
 import { AuthGuard } from "src/middlewares/auth.middleware";
 import { Token } from "src/decorator/admin.decorator";
+import { dueDateValue } from "src/config";
 
 @Controller("mng")
 export class MangaeMentController {
   constructor(private manageMentService: ManagementService) {
-    // this.manageMentService.registerDueDate([3, 6, 12]);
+    this.manageMentService.registerDueDate(dueDateValue);
+    this.manageMentService.registerPriceData(dueDateValue);
   }
 
   @UseGuards(AuthGuard)
