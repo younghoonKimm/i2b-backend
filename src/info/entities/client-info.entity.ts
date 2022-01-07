@@ -4,7 +4,7 @@ import { InfoEntity } from "src/common/entities/info.entity";
 
 @Entity()
 export class ClientInfoEntity {
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn("uuid")
   id: number;
 
   @Column()
@@ -34,6 +34,8 @@ export class ClientInfoEntity {
   @IsString()
   clientNumber: string;
 
-  @OneToOne(() => InfoEntity, (infoEntity) => infoEntity.baseInfo)
+  @OneToOne(() => InfoEntity, (infoEntity) => infoEntity.baseInfo, {
+    onDelete: "CASCADE",
+  })
   info: InfoEntity;
 }

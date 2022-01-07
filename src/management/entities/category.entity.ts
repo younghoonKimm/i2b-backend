@@ -5,7 +5,7 @@ import {
   OneToMany,
   ManyToOne,
 } from "typeorm";
-import { IsString, IsNumber } from "class-validator";
+import { IsString, IsNumber, Max } from "class-validator";
 
 export class CategoryEntity {
   @PrimaryGeneratedColumn("uuid")
@@ -30,14 +30,17 @@ class PercentsDto {
 
   @Column()
   @IsNumber()
+  @Max(100)
   percentHigh: number;
 
   @Column()
   @IsNumber()
+  @Max(100)
   percentMid: number;
 
   @Column()
   @IsNumber()
+  @Max(100)
   percentLow: number;
 }
 
