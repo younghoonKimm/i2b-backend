@@ -7,8 +7,10 @@ export class HasID implements CanActivate {
 
   public validateToken(token: string) {
     try {
-      const isToken = this.jwtServie.verify(token.toString());
-      return isToken;
+      if (token) {
+        const isToken = this.jwtServie.verify(token.toString());
+        return isToken;
+      }
     } catch (error) {
       return false;
     }
@@ -21,6 +23,7 @@ export class HasID implements CanActivate {
     const requsetToken = request.headers.authorization.replace("Bearer ", "");
 
     if (requsetToken === undefined) {
+      console.log(requsetToken);
       return true;
     }
 

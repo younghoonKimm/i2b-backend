@@ -10,12 +10,12 @@ export class InfoController {
   constructor(private infoService: InfoService) {}
   @Get()
   getInfo(@Body() clientEmail: string) {
-    return this.infoService.findUser(clientEmail);
+    return this.infoService.getUser(clientEmail);
   }
 
   @UseGuards(HasID)
-  @Post()
-  postFirstInfo(@Token() token: any, @Body() infoData: InfoDto) {
+  @Post("/create")
+  postFirstInfo(@Body() infoData: InfoDto, @Token() token?: any) {
     if (token) {
       return this.infoService.saveInfo(infoData, token.id);
     }

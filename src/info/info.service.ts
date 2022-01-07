@@ -24,7 +24,7 @@ export class InfoService {
     private mailService: MailService,
   ) {}
 
-  async findUser(clientEmail: string) {
+  async getUser(clientEmail: string) {
     const user = await this.info.findOne(clientEmail, {
       relations: ["clientInfo", "baseInfo"],
     });
@@ -46,52 +46,63 @@ export class InfoService {
       );
 
       if (exists) {
+        console.log(infoData);
+        const { clientInfo, baseInfo } = infoData;
         const infoName = infoNameArray[0]; //0 will be status
 
-        await this[infoName].save({
+        await this[infoData.status].save({
           ...exists.clientInfo,
           ...clientInfo,
         });
 
         await this.info.save(exists);
 
-        const token = this.jwtService.sign({ id: exists.id });
-        return { ok: true, token };
+        // const token = this.jwtService.sign({ id: exists.id });
+        // return { token };
       } else {
-        return { ok: false, error: "오류" };
+        return { error: "오류" };
       }
     } catch (error) {
-      return { ok: false, error };
+      return { error };
     }
   }
 
   async createInfo(infoData: InfoDto): Promise<ClientInfoOutput> {
     try {
+      const exists = await this.info.findOne(
+        { clientEmail: infoData.clientEmail },
+        // { relations: [...infoNameArray] },
+      );
+
+      if (exists) {
+        const token = this.jwtService.sign({ id: exists.id });
+        return { token, error: "존재하는 이메일" };
+      }
+
       const { clientInfo, baseInfo, detailInfo, password } = infoData;
 
       const crateClientInfo = await this.clientInfo.save(
         this.clientInfo.create(clientInfo),
       );
 
-      const crateBaseInfo =
-        baseInfo && (await this.baseInfo.save(this.baseInfo.create(baseInfo)));
+      // const crateBaseInfo =
+      //   baseInfo && (await this.baseInfo.save(this.baseInfo.create(baseInfo)));
 
       const newInfoData = await this.info.save(
         this.info.create({
-          status: 1, //will be just status.
           clientEmail: clientInfo.clientEmail,
           password,
           clientInfo: crateClientInfo,
-          baseInfo: crateBaseInfo,
+          // baseInfo: crateBaseInfo,
         }),
       );
       const token = this.jwtService.sign({ id: newInfoData.id });
 
       await this.mailService.sendToClient();
 
-      return { ok: true, token };
+      return { token };
     } catch (error) {
-      return { ok: false, error };
+      return { error };
     }
   }
 

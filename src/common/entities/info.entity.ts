@@ -1,6 +1,6 @@
 import { Entity, Column, BeforeInsert, OneToOne, JoinColumn } from "typeorm";
 import { CommonEntitiy } from "src/common/entities/common.entity";
-import { IsString, IsEnum, Length } from "class-validator";
+import { IsString, IsEnum, Length, IsEmail } from "class-validator";
 import * as bcrypt from "bcrypt";
 
 import { InternalServerErrorException } from "@nestjs/common";
@@ -8,21 +8,19 @@ import { ClientInfoEntity } from "src/info/entities/client-info.entity";
 import { BaseInfoEntity } from "src/info/entities/base-info.entity";
 import { DetailInfo } from "src/info/entities/detail-info.entity";
 
-enum StatusStep {
-  firstStep,
-  secondStep,
-  thirdStep,
-  fourthStep,
+export enum StatusStep {
+  clientInfo = "clientInfo",
+  baseInfo = "baseInfo",
+  detailInfo = "detailInfo",
+  fourthStep = "fourthStep",
+  end = "end",
 }
 
 @Entity()
 export class InfoEntity extends CommonEntitiy {
-  @Column({ type: "enum", enum: StatusStep })
-  @IsEnum(StatusStep)
-  status: StatusStep;
-
   @Column()
-  @IsString()
+  @IsEmail()
+  @Length(5, 35)
   clientEmail: string;
 
   @Column({ nullable: true })
@@ -30,9 +28,13 @@ export class InfoEntity extends CommonEntitiy {
   @Length(5)
   password?: string;
 
+  @Column({ type: "enum", enum: StatusStep, default: StatusStep.clientInfo })
+  @IsEnum(StatusStep)
+  status: StatusStep;
+
   @OneToOne(() => ClientInfoEntity, (clientInfo) => clientInfo.info, {
     nullable: false,
-    onDelete: "SET NULL",
+    onDelete: "CASCADE",
   })
   @JoinColumn()
   clientInfo: ClientInfoEntity;

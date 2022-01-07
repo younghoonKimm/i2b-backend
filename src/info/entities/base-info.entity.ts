@@ -19,6 +19,8 @@ export class BaseInfoEntity {
   @IsString()
   targetDevice: string;
 
-  @OneToOne(() => InfoEntity, (infoEntity) => infoEntity.clientInfo)
+  @OneToOne(() => InfoEntity, (infoEntity) => infoEntity.clientInfo, {
+    onDelete: "CASCADE",
+  })
   info: InfoEntity;
 }

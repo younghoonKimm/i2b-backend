@@ -17,6 +17,8 @@ export class DetailInfo {
   @Length(0, 6000)
   companyWebSite: string;
 
-  @OneToOne(() => InfoEntity, (infoEntity) => infoEntity.clientInfo)
+  @OneToOne(() => InfoEntity, (infoEntity) => infoEntity.clientInfo, {
+    onDelete: "CASCADE",
+  })
   info: InfoEntity;
 }

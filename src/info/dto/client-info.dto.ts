@@ -10,10 +10,6 @@ export class ClientInfoDto extends ClientInfoEntity {
 }
 
 export class ClientInfoOutput {
-  @Column()
-  @IsBoolean()
-  ok: boolean;
-
   @Column({ nullable: true })
   @IsString()
   token?: string;
