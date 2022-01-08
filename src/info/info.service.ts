@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 
 import { InfoEntity } from "../common/entities/info.entity";
-import { InjectRepository } from "@nestjs/typeorm";
+import { InjectRepository, QueryRunner, Connection } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { ClientInfoEntity } from "./entities/client-info.entity";
 import { ClientInfoDto, ClientInfoOutput } from "./dto/client-info.dto";
@@ -15,6 +15,7 @@ const infoNameArray = ["clientInfo", "baseInfo"];
 @Injectable()
 export class InfoService {
   constructor(
+    private connection: Connection,
     @InjectRepository(InfoEntity) private readonly info: Repository<InfoEntity>,
     @InjectRepository(ClientInfoEntity)
     private readonly clientInfo: Repository<ClientInfoEntity>,
@@ -84,7 +85,10 @@ export class InfoService {
       const crateClientInfo = await this.clientInfo.save(
         this.clientInfo.create(clientInfo),
       );
+      // const queryRunner = this.connection.createQueryRunner();
 
+      // await queryRunner.connect();
+      // await queryRunner.startTransaction();
       // const crateBaseInfo =
       //   baseInfo && (await this.baseInfo.save(this.baseInfo.create(baseInfo)));
 
