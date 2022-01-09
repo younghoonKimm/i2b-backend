@@ -1,1 +1,1 @@
-export const dueDateValue = [3, 8, 12];
+export const dueDateValue = [3, 6, 12];

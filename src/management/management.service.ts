@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
+import { Repository, Connection } from "typeorm";
 import { v4 as uuidv4 } from "uuid";
 
 import { ManageMentCategoryDto } from "./dto/category.dto";
@@ -10,6 +10,7 @@ import {
 } from "./entities/category.entity";
 import { DueDateEntity } from "./entities/dueDate.entity";
 import { dueDateValue } from "src/config";
+import { date } from "joi";
 
 const mngValidateHiddenSeqNo = (array) => {
   if (array.length > 0) {
@@ -61,6 +62,7 @@ const setPrecent = (length) =>
 @Injectable()
 export class ManagementService {
   constructor(
+    private connection: Connection,
     @InjectRepository(ManageMentCategoryEntites)
     private readonly ManageMentCategoryEntites: Repository<ManageMentCategoryEntites>,
     @InjectRepository(ManageMentCategoryEntity)
@@ -74,43 +76,75 @@ export class ManagementService {
   }
 
   async registerDueDate(array: number[]) {
-    const saveDueDate = (dueDate) =>
-      this.dueDateEntity.save(
-        this.dueDateEntity.create({
-          projDueDateName: `${dueDate}개월`,
-          projDueDateMonth: dueDate,
-        }),
-      );
     const dueDates = await this.dueDateEntity.find();
+    const queryRunner = this.connection.createQueryRunner();
+    await queryRunner.connect();
 
-    if (dueDates.length > 0) {
-      const dates = dueDates.map((value) => value.projDueDateMonth);
-      const addDates = array.filter(
-        (addDate) => !dates.find((date) => date === addDate),
-      );
+    const saveDueDate = async (dueDate) => {
+      const newDueDate = new DueDateEntity();
 
-      for (let i = 0; i < dueDates.length; i++) {
-        const dueDate = dueDates[i].projDueDateMonth;
-        const isValue = array.find((value) => value === dueDate);
-        if (isValue) {
-          continue;
-        } else {
-          await this.dueDateEntity.delete({
-            projDueDateMonth: dueDate,
-          });
+      newDueDate.projDueDateName = `${dueDate}개월`;
+      newDueDate.projDueDateMonth = dueDate;
+      await queryRunner.manager.save(newDueDate);
+      await queryRunner.commitTransaction();
+    };
+    try {
+      if (dueDates.length > 0) {
+        const dates = dueDates.map((value) => value.projDueDateMonth);
+        const addDates = array.filter(
+          (addDate) => !dates.find((date) => date === addDate),
+        );
+        let deleteDates = [];
+        for (let i = 0; i < dueDates.length; i++) {
+          const dueDate = dueDates[i].projDueDateMonth;
+          const isValue = array.find((value) => value === dueDate);
+          if (isValue) {
+            continue;
+          } else {
+            deleteDates.push(dueDate);
+          }
+        }
+
+        // await this.dueDateEntity.delete({
+        //   projDueDateMonth: deleteDates,
+        // });
+        // await this.dueDateEntity.delete({
+        //   projDueDateMonth: dueDate,
+        // });
+        // delete({
+        //   projDueDateMonth: +deleteDates.map((value) => value),
+        // });
+
+        // await this.dueDateEntity
+        //   .createQueryBuilder()
+        //   .from(this.dueDateEntity, "duedate")
+        //   .where({ projDueDateMonth: +deleteDates.map((value) => value) })
+        //   .execute();
+
+        if (addDates.length > 0) {
+          for (let j = 0; j < addDates.length; j++) {
+            saveDueDate(addDates[j]);
+          }
+        }
+        if (deleteDates) {
+          await this.dueDateEntity
+            .createQueryBuilder("due_date_entity")
+            .where("projDueDateMonth = :projDueDateMonth", {
+              projDueDateMonth: 15,
+            })
+            .delete()
+            .execute();
+        }
+      } else {
+        for (let i = 0; i < array.length; i++) {
+          const dueDate = array[i];
+          await saveDueDate(dueDate);
         }
       }
-
-      if (addDates.length > 0) {
-        for (let j = 0; j < addDates.length; j++) {
-          saveDueDate(addDates[j]);
-        }
-      }
-    } else {
-      for (let i = 0; i < array.length; i++) {
-        const dueDate = array[i];
-        await saveDueDate(dueDate);
-      }
+    } catch {
+      await queryRunner.rollbackTransaction();
+    } finally {
+      queryRunner.release();
     }
   }
   // [3,6,12]
