@@ -9,8 +9,7 @@ import {
   ManageMentCategoryEntity,
 } from "./entities/category.entity";
 import { DueDateEntity } from "./entities/dueDate.entity";
-import { dueDateValue } from "src/config";
-import { date } from "joi";
+import { dueDateValue, defaultPercent, defaultPrice } from "src/config";
 
 const mngValidateHiddenSeqNo = (array) => {
   if (array.length > 0) {
@@ -39,24 +38,9 @@ const createEntity = async (arr, parent, entity, price) => {
 };
 
 //빈곳에 퍼센트 입력
-const percent = {
-  percentHigh: 0,
-  percentMid: 0,
-  percentLow: 0,
-};
-
-const defaultPrice = {
-  highManPrice: 0,
-  highManCount: 0,
-  midManPrice: 0,
-  midManCount: 0,
-  lowManPrice: 0,
-  lowManCount: 0,
-};
-
 const setPrecent = (length) =>
   new Array(length)
-    .fill(percent)
+    .fill(defaultPercent)
     .map((value, index) => ({ ...value, month: index + 1 }));
 
 @Injectable()
@@ -76,24 +60,29 @@ export class ManagementService {
   }
 
   async registerDueDate(array: number[]) {
-    const dueDates = await this.dueDateEntity.find();
+    const dueDates = await this.dueDateEntity
+      .createQueryBuilder("due_date_entity")
+      .getMany();
+
     const queryRunner = this.connection.createQueryRunner();
     await queryRunner.connect();
 
+    //querymanger를 통한 dueDate 생성 method
     const saveDueDate = async (dueDate) => {
       const newDueDate = new DueDateEntity();
 
       newDueDate.projDueDateName = `${dueDate}개월`;
       newDueDate.projDueDateMonth = dueDate;
       await queryRunner.manager.save(newDueDate);
-      await queryRunner.commitTransaction();
     };
+
     try {
       if (dueDates.length > 0) {
         const dates = dueDates.map((value) => value.projDueDateMonth);
         const addDates = array.filter(
           (addDate) => !dates.find((date) => date === addDate),
         );
+
         let deleteDates = [];
         for (let i = 0; i < dueDates.length; i++) {
           const dueDate = dueDates[i].projDueDateMonth;
@@ -101,45 +90,43 @@ export class ManagementService {
           if (isValue) {
             continue;
           } else {
-            deleteDates.push(dueDate);
+            // deleteDates.push(dueDate);
+            await this.dueDateEntity.delete({
+              projDueDateMonth: dueDate,
+            });
           }
         }
-
-        // await this.dueDateEntity.delete({
-        //   projDueDateMonth: deleteDates,
-        // });
-        // await this.dueDateEntity.delete({
-        //   projDueDateMonth: dueDate,
-        // });
-        // delete({
-        //   projDueDateMonth: +deleteDates.map((value) => value),
-        // });
-
-        // await this.dueDateEntity
-        //   .createQueryBuilder()
-        //   .from(this.dueDateEntity, "duedate")
-        //   .where({ projDueDateMonth: +deleteDates.map((value) => value) })
-        //   .execute();
 
         if (addDates.length > 0) {
-          for (let j = 0; j < addDates.length; j++) {
-            saveDueDate(addDates[j]);
-          }
+          await Promise.all(addDates.map((value) => saveDueDate(value)));
+          await queryRunner.commitTransaction();
         }
-        if (deleteDates) {
-          await this.dueDateEntity
-            .createQueryBuilder("due_date_entity")
-            .where("projDueDateMonth = :projDueDateMonth", {
-              projDueDateMonth: 15,
-            })
-            .delete()
-            .execute();
-        }
+        //query manage를 통한 deleteDates 추가해야함
+        // if (deleteDates) {
+        //   console.log(deleteDates);
+        //   await this.dueDateEntity
+        //     .createQueryBuilder("due_date_entity")
+        //     // .where(
+        //     //   "projDueDateMonth = :projDueDateMonth",
+        //     //   deleteDates.forEach((value) => {
+        //     //     projDueDateMonth: value;
+        //     //   }),
+        //     // )
+        //     // "projDueDateMonth = :projDueDateMonth"
+        //     .where(
+        //       deleteDates.map((value) => {
+        //         projDueDateMonth: value;
+        //       }),
+        //     )
+        //     .delete()
+        //     .execute();
+        // }
       } else {
         for (let i = 0; i < array.length; i++) {
           const dueDate = array[i];
           await saveDueDate(dueDate);
         }
+        await queryRunner.commitTransaction();
       }
     } catch {
       await queryRunner.rollbackTransaction();
@@ -147,7 +134,8 @@ export class ManagementService {
       queryRunner.release();
     }
   }
-  // [3,6,12]
+
+  //기간 변경시 priceData 추가.
   emptyPriceArray() {
     return dueDateValue.reduce((acc: any, cur: any) => {
       acc.push({
@@ -160,33 +148,51 @@ export class ManagementService {
   }
 
   async registerPriceData(array: number[]) {
-    const category = await this.ManageMentCategoryEntites.find();
+    const queryRunner = this.connection.createQueryRunner();
+    await queryRunner.connect();
 
-    for (let k = 0; k < category.length; k++) {
-      for (let l = 0; l < category[k].children.length; l++) {
-        let newPrice = [];
-        for (let m = 0; m < array.length; m++) {
-          const keepPrice = category[k].children[l].price.find(
-            (priceData) => priceData.month === array[m],
-          );
-          if (keepPrice) {
-            newPrice = [...newPrice, keepPrice];
-          } else {
-            newPrice = [
-              ...newPrice,
-              {
-                month: array[m],
-                ...defaultPrice,
-                precent: setPrecent(array[m]),
-              },
-            ];
+    const categories = await this.ManageMentCategoryEntites.createQueryBuilder(
+      "management_category_entites",
+    )
+      .leftJoinAndSelect("management_category_entites.children", "children")
+      .getMany();
+
+    try {
+      Promise.all(
+        categories.map(async (category) => {
+          for (let l = 0; l < category.children.length; l++) {
+            let newPrice = [];
+
+            for (let m = 0; m < array.length; m++) {
+              const keepPrice = category.children[l].price.find(
+                (priceData) => priceData.month === array[m],
+              );
+              if (keepPrice) {
+                newPrice = [...newPrice, keepPrice];
+              } else {
+                newPrice = [
+                  ...newPrice,
+                  {
+                    month: array[m],
+                    ...defaultPrice,
+                    precent: setPrecent(array[m]),
+                  },
+                ];
+              }
+
+              await queryRunner.manager.save(ManageMentCategoryEntity, {
+                ...category.children[l],
+                price: newPrice,
+              });
+            }
           }
-          await this.manageMentCategoryEntity.save({
-            ...category[k].children[l],
-            price: newPrice,
-          });
-        }
-      }
+        }),
+      );
+      await queryRunner.commitTransaction();
+    } catch (e) {
+      await queryRunner.rollbackTransaction();
+    } finally {
+      queryRunner.release();
     }
   }
 
