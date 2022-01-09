@@ -1,7 +1,8 @@
 import { Injectable } from "@nestjs/common";
 
 import { InfoEntity } from "../common/entities/info.entity";
-import { InjectRepository, QueryRunner, Connection } from "@nestjs/typeorm";
+import { InjectRepository } from "@nestjs/typeorm";
+import { Any, Brackets, Connection, In, QueryRunner } from "typeorm";
 import { Repository } from "typeorm";
 import { ClientInfoEntity } from "./entities/client-info.entity";
 import { ClientInfoDto, ClientInfoOutput } from "./dto/client-info.dto";
@@ -38,6 +39,10 @@ export class InfoService {
   }
 
   async saveInfo(infoData: InfoDto, id: string): Promise<ClientInfoOutput> {
+    const queryRunner = this.connection.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
     try {
       const { clientInfo } = infoData;
 
@@ -47,7 +52,6 @@ export class InfoService {
       );
 
       if (exists) {
-        console.log(infoData);
         const { clientInfo, baseInfo } = infoData;
         const infoName = infoNameArray[0]; //0 will be status
 
@@ -56,19 +60,27 @@ export class InfoService {
           ...clientInfo,
         });
 
-        await this.info.save(exists);
+        await queryRunner.manager.save(exists);
+
+        await queryRunner.commitTransaction();
+        // await this.info.save(exists);
 
         // const token = this.jwtService.sign({ id: exists.id });
         // return { token };
       } else {
+        await queryRunner.rollbackTransaction();
         return { error: "오류" };
       }
     } catch (error) {
+      await queryRunner.rollbackTransaction();
       return { error };
+    } finally {
+      queryRunner.release();
     }
   }
 
   async createInfo(infoData: InfoDto): Promise<ClientInfoOutput> {
+    const queryRunner = this.connection.createQueryRunner();
     try {
       const exists = await this.info.findOne(
         { clientEmail: infoData.clientEmail },
@@ -85,7 +97,6 @@ export class InfoService {
       const crateClientInfo = await this.clientInfo.save(
         this.clientInfo.create(clientInfo),
       );
-      // const queryRunner = this.connection.createQueryRunner();
 
       // await queryRunner.connect();
       // await queryRunner.startTransaction();
@@ -106,7 +117,10 @@ export class InfoService {
 
       return { token };
     } catch (error) {
+      await queryRunner.rollbackTransaction();
       return { error };
+    } finally {
+      queryRunner.release();
     }
   }
 
