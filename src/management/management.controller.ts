@@ -8,8 +8,14 @@ import { AuthService } from "src/auth/auth.service";
 import { AuthGuard } from "src/middlewares/auth.middleware";
 import { Token } from "src/decorator/admin.decorator";
 import { dueDateValue } from "src/config";
+import {
+  ManageMentCategoryEntity,
+  ManageMentCategoryEntites,
+} from "./entities/category.entity";
+import { ApiTags, ApiOperation, ApiCreatedResponse } from "@nestjs/swagger";
 
 @Controller("mng")
+@ApiTags("Management")
 export class MangaeMentController {
   constructor(private manageMentService: ManagementService) {
     this.manageMentService.registerDueDate(dueDateValue);
@@ -18,6 +24,8 @@ export class MangaeMentController {
 
   @UseGuards(AuthGuard)
   @Get("/duedate")
+  @ApiOperation({ summary: "", description: "" })
+  @ApiCreatedResponse({ description: "get Due Date" })
   async getDueDate() {
     return this.manageMentService.getAllDueDate();
   }
@@ -52,7 +60,11 @@ export class MangaeMentController {
 
   @UseGuards(AuthGuard)
   @Post("/categories/:seqNo/Price")
-  async setPriceData(@Param("seqNo") seqNo: string) {
-    return this.manageMentService.setPriceData(seqNo);
+  async setPriceData(
+    @Body()
+    data: ManageMentCategoryEntites,
+    @Param("seqNo") seqNo: string,
+  ) {
+    return this.manageMentService.setPriceData(data, seqNo);
   }
 }

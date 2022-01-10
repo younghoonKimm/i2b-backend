@@ -60,12 +60,12 @@ export class ManagementService {
   }
 
   async registerDueDate(array: number[]) {
-    const dueDates = await this.dueDateEntity
-      .createQueryBuilder("due_date_entity")
-      .getMany();
-
     const queryRunner = this.connection.createQueryRunner();
     await queryRunner.connect();
+
+    const dueDates = await queryRunner.query("SELECT * FROM due_date_entity");
+
+    await queryRunner.startTransaction();
 
     //querymanger를 통한 dueDate 생성 method
     const saveDueDate = async (dueDate) => {
@@ -130,8 +130,6 @@ export class ManagementService {
       }
     } catch {
       await queryRunner.rollbackTransaction();
-    } finally {
-      queryRunner.release();
     }
   }
 
@@ -148,14 +146,15 @@ export class ManagementService {
   }
 
   async registerPriceData(array: number[]) {
-    const queryRunner = this.connection.createQueryRunner();
-    await queryRunner.connect();
-
     const categories = await this.ManageMentCategoryEntites.createQueryBuilder(
       "management_category_entites",
     )
       .leftJoinAndSelect("management_category_entites.children", "children")
       .getMany();
+
+    const queryRunner = this.connection.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
 
     try {
       Promise.all(
@@ -164,7 +163,7 @@ export class ManagementService {
             let newPrice = [];
 
             for (let m = 0; m < array.length; m++) {
-              const keepPrice = category.children[l].price.find(
+              const keepPrice = category.children[l].price?.find(
                 (priceData) => priceData.month === array[m],
               );
               if (keepPrice) {
@@ -188,11 +187,10 @@ export class ManagementService {
           }
         }),
       );
+
       await queryRunner.commitTransaction();
     } catch (e) {
       await queryRunner.rollbackTransaction();
-    } finally {
-      queryRunner.release();
     }
   }
 
@@ -273,14 +271,54 @@ export class ManagementService {
     return category;
   }
 
-  async setPriceData(seqNo: string) {
-    const category = await this.ManageMentCategoryEntites.findOne(
-      { seqNo },
-      { relations: ["children"] },
-    );
+  async setPriceData(data: ManageMentCategoryEntites, seqNo: string) {
+    const queryRunner = this.connection.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
 
-    for (let i = 0; i < category.children.length; i++) {}
+    try {
+      const category = await this.connection
+        .getRepository(ManageMentCategoryEntites)
+        .findOne({ seqNo }, { relations: ["children"] });
 
-    return category;
+      // const cate = await queryRunner.query(
+      //   `SELECT * FROM manage_ment_category_entites
+      //    WHERE "seqNo" = '${seqNo}'
+
+      //    `,
+      // );
+
+      Promise.all(
+        data.children.map(async (children, index) => {
+          let newPrice = [];
+
+          for (let m = 0; m < dueDateValue.length; m++) {
+            const keepPrice = children.price.find(
+              (priceData) => priceData.month === dueDateValue[m],
+            );
+            if (keepPrice) {
+              newPrice = [...newPrice, keepPrice];
+            } else {
+              newPrice = [
+                ...newPrice,
+                {
+                  month: dueDateValue[m],
+                  ...defaultPrice,
+                  precent: setPrecent(dueDateValue[m]),
+                },
+              ];
+            }
+
+            await queryRunner.manager.save(ManageMentCategoryEntity, {
+              ...children,
+              price: newPrice,
+            });
+          }
+        }),
+      );
+      await queryRunner.commitTransaction();
+    } catch (e) {
+      await queryRunner.rollbackTransaction();
+    }
   }
 }
