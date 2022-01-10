@@ -1,5 +1,6 @@
 import { Column } from "typeorm";
 import { IsString, Length, IsEmail } from "class-validator";
+import { ApiProperty } from "@nestjs/swagger";
 
 export class AdminInfoInputDto {
   @Column()

@@ -3,7 +3,10 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { Repository, Connection } from "typeorm";
 import { v4 as uuidv4 } from "uuid";
 
-import { ManageMentCategoryDto } from "./dto/category.dto";
+import {
+  ManageMentCategoryDto,
+  ManageMentCategoryEntityInput,
+} from "./dto/category.dto";
 import {
   ManageMentCategoryEntites,
   ManageMentCategoryEntity,
@@ -271,7 +274,7 @@ export class ManagementService {
     return category;
   }
 
-  async setPriceData(data: ManageMentCategoryEntites, seqNo: string) {
+  async setPriceData(data: ManageMentCategoryEntityInput, seqNo: string) {
     const queryRunner = this.connection.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
@@ -289,13 +292,18 @@ export class ManagementService {
       // );
 
       Promise.all(
-        data.children.map(async (children, index) => {
+        data.children.map(async (children) => {
           let newPrice = [];
+
+          const beforeData = category.children.find(
+            (child) => child.seqNo === child.seqNo,
+          );
 
           for (let m = 0; m < dueDateValue.length; m++) {
             const keepPrice = children.price.find(
               (priceData) => priceData.month === dueDateValue[m],
             );
+
             if (keepPrice) {
               newPrice = [...newPrice, keepPrice];
             } else {
@@ -308,12 +316,11 @@ export class ManagementService {
                 },
               ];
             }
-
-            await queryRunner.manager.save(ManageMentCategoryEntity, {
-              ...children,
-              price: newPrice,
-            });
           }
+          await queryRunner.manager.save(ManageMentCategoryEntity, {
+            ...beforeData,
+            price: newPrice,
+          });
         }),
       );
       await queryRunner.commitTransaction();

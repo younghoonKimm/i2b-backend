@@ -43,11 +43,11 @@ export class AdminService {
       const passwordCorrect = await adminUser.checkPassword(adminPw);
       if (passwordCorrect) {
         const token = this.jwtService.sign({ id: adminUser.id });
-        return { ok: true, token, id: adminUser.adminId };
+        return { token, id: adminUser.adminId };
       }
-      return { ok: false, error: "비밀번호 확인" };
+      return { error: "비밀번호 확인" };
     } catch (error) {
-      return { ok: false, error: "login error" };
+      return { error: "login error" };
     }
   }
 
