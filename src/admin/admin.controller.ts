@@ -8,8 +8,10 @@ import { AdminInfoEntity } from "./entities/admin-info.entity";
 import { JwtService } from "src/jwt/jwt.service";
 import { AuthGuard } from "src/middlewares/auth.middleware";
 import { Token } from "src/decorator/admin.decorator";
+import { ApiOperation, ApiCreatedResponse, ApiTags } from "@nestjs/swagger";
 
 @Controller("admin")
+@ApiTags("Admin")
 export class AdminController {
   constructor(
     private adminService: AdminService,
@@ -22,6 +24,8 @@ export class AdminController {
   }
 
   @Post("/login")
+  @ApiOperation({ summary: "Body에 ID, PW", description: "" })
+  @ApiCreatedResponse({ description: "Admin 계정 로그인" })
   loginAdminUser(@Body() adminLoginInput: AdminLoginInput) {
     return this.adminService.loginAdminUser(adminLoginInput);
   }

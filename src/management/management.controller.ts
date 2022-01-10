@@ -8,10 +8,7 @@ import { AuthService } from "src/auth/auth.service";
 import { AuthGuard } from "src/middlewares/auth.middleware";
 import { Token } from "src/decorator/admin.decorator";
 import { dueDateValue } from "src/config";
-import {
-  ManageMentCategoryEntity,
-  ManageMentCategoryEntites,
-} from "./entities/category.entity";
+import { ManageMentCategoryEntites } from "./entities/category.entity";
 import { ApiTags, ApiOperation, ApiCreatedResponse } from "@nestjs/swagger";
 
 @Controller("mng")
@@ -38,7 +35,7 @@ export class MangaeMentController {
 
   @UseGuards(AuthGuard)
   @Get("/categories/:seqNo?")
-  async getCategoryChildren(@Param("seqNo") seqNo?: any) {
+  async getCategoryChildren(@Param("seqNo") seqNo?: string) {
     return this.manageMentService.getChildData(seqNo);
   }
 
@@ -47,14 +44,14 @@ export class MangaeMentController {
   async saveCategoryData(
     @Body()
     data: ManageMentCategoryDto,
-    @Param("seqNo") seqNo?: any,
+    @Param("seqNo") seqNo?: string,
   ) {
     return this.manageMentService.saveCategoryData(data, seqNo);
   }
 
   @UseGuards(AuthGuard)
   @Get("/categories/:seqNo/Price")
-  async getPriceData(@Param("seqNo") seqNo: string) {
+  async getPriceData(@Param("seqNo") seqNo?: string) {
     return this.manageMentService.getPriceData(seqNo);
   }
 
