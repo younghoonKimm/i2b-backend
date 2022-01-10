@@ -3,7 +3,10 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { Repository, Connection } from "typeorm";
 import { v4 as uuidv4 } from "uuid";
 
-import { ManageMentCategoryDto } from "./dto/category.dto";
+import {
+  ManageMentCategoryDto,
+  ManageMentCategoryEntityInput,
+} from "./dto/category.dto";
 import {
   ManageMentCategoryEntites,
   ManageMentCategoryEntity,
@@ -271,7 +274,7 @@ export class ManagementService {
     return category;
   }
 
-  async setPriceData(data: ManageMentCategoryEntites, seqNo: string) {
+  async setPriceData(data: ManageMentCategoryEntityInput, seqNo: string) {
     const queryRunner = this.connection.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();

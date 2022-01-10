@@ -1,5 +1,9 @@
-import { CategoryEntity } from "../entities/category.entity";
+import {
+  CategoryEntity,
+  ManageMentCategoryEntites,
+} from "../entities/category.entity";
 import { PrimaryGeneratedColumn, Column } from "typeorm";
+import { PickType } from "@nestjs/swagger";
 
 export class ManageMentCategoryDto extends CategoryEntity {
   @PrimaryGeneratedColumn("uuid")
@@ -7,3 +11,8 @@ export class ManageMentCategoryDto extends CategoryEntity {
 
   children?: any;
 }
+
+export class ManageMentCategoryEntityInput extends PickType(
+  ManageMentCategoryEntites,
+  ["children"],
+) {}

@@ -6,12 +6,21 @@ import {
   IsBoolean,
   IsObject,
 } from "class-validator";
+import { ApiProperty } from "@nestjs/swagger";
 
 export class AdminLoginInput {
+  @ApiProperty({
+    example: "system",
+    required: true,
+  })
   @Column()
   @IsString()
   adminId: string;
 
+  @ApiProperty({
+    example: "olivestonelab12##",
+    required: true,
+  })
   @Column()
   @IsString()
   @Length(13, 30)
@@ -19,18 +28,17 @@ export class AdminLoginInput {
 }
 
 export class AdminLoginOutput {
-  @Column()
-  @IsBoolean()
-  ok: boolean;
-
+  @ApiProperty()
   @Column({ nullable: true })
   @IsString()
   id?: string;
 
+  @ApiProperty()
   @Column({ nullable: true })
   @IsString()
   token?: string;
 
+  @ApiProperty()
   @Column()
   @IsBoolean()
   error?: string;
