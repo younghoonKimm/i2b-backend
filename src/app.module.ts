@@ -61,7 +61,6 @@ import { JWTMiddlewares } from "./middlewares/jwt.middlewares";
             password: process.env.DB_PASSWORD,
             database: process.env.DB_NAME,
           }),
-
       entities: [
         InfoEntity,
         ClientInfoEntity,
@@ -72,6 +71,9 @@ import { JWTMiddlewares } from "./middlewares/jwt.middlewares";
         ManageMentCategoryEntity,
         DueDateEntity,
       ],
+      ssl: {
+        rejectUnauthorized: false,
+      },
       synchronize: process.env.NODE_ENV !== "production",
       logging: process.env.NODE_ENV !== "production",
     }),
