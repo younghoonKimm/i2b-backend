@@ -11,20 +11,29 @@ import { exampleManagementChildren } from "src/config";
 
 export class CategoryEntity {
   @PrimaryGeneratedColumn("uuid")
+  @ApiProperty({
+    example: "e100e497-414f-4259-81ca-975e8b161701",
+  })
   seqNo: string;
 
   @Column()
   @IsString()
-  @ApiProperty()
+  @ApiProperty({
+    example: "UI/UX 전략",
+  })
   name: string;
 
   @Column()
   @IsNumber()
-  @ApiProperty()
+  @ApiProperty({
+    example: 0,
+  })
   order: number;
 
   @Column({ default: false })
-  @ApiProperty()
+  @ApiProperty({
+    example: false,
+  })
   isHidden: boolean;
 }
 

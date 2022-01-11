@@ -8,13 +8,19 @@ import {
   ManagementParentOutput,
   ManageMentSetPriceInput,
   ManageMentSetPriceOutput,
+  ManageMentSetDataInput,
 } from "./dto/category.dto";
 import {
   ManageMentCategoryEntites,
   ManageMentCategoryEntity,
 } from "./entities/category.entity";
 import { DueDateEntity } from "./entities/dueDate.entity";
-import { dueDateValue, defaultPercent, defaultPrice } from "src/config";
+import {
+  dueDateValue,
+  defaultPercent,
+  defaultPrice,
+  parentData,
+} from "src/config";
 
 const mngValidateHiddenSeqNo = (array) => {
   if (array.length > 0) {
@@ -217,8 +223,19 @@ export class ManagementService {
     if (childData) return childData.children;
   }
 
+  async setParentData() {
+    return parentData.forEach(async (value) => {
+      await this.ManageMentCategoryEntites.save(
+        this.ManageMentCategoryEntites.create({
+          name: value.name,
+          order: value.order,
+        }),
+      );
+    });
+  }
+
   async saveCategoryData(
-    { children }: ManageMentSetPriceInput,
+    { children }: ManageMentSetDataInput,
     seqNo?: string,
   ): Promise<ManageMentSetPriceOutput> {
     try {

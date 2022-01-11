@@ -71,9 +71,6 @@ import { JWTMiddlewares } from "./middlewares/jwt.middlewares";
         ManageMentCategoryEntity,
         DueDateEntity,
       ],
-      ssl: {
-        rejectUnauthorized: false,
-      },
       synchronize: true,
       logging: process.env.NODE_ENV !== "production",
     }),
