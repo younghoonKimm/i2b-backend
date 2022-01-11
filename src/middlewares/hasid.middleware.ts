@@ -22,15 +22,11 @@ export class HasID implements CanActivate {
 
     const requsetToken = request.headers.authorization.replace("Bearer ", "");
 
-    if (requsetToken === undefined) {
-      console.log(requsetToken);
-      return true;
-    }
-
     const decodedToken = this.validateToken(requsetToken);
+
     if (decodedToken) {
       request.user = decodedToken;
-      return true;
     }
+    return true;
   }
 }

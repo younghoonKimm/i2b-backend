@@ -5,7 +5,9 @@ import { v4 as uuidv4 } from "uuid";
 
 import {
   ManageMentCategoryDto,
-  ManageMentCategoryEntityInput,
+  ManagementParentOutput,
+  ManageMentSetPriceInput,
+  ManageMentSetPriceOutput,
 } from "./dto/category.dto";
 import {
   ManageMentCategoryEntites,
@@ -58,7 +60,7 @@ export class ManagementService {
     private readonly dueDateEntity: Repository<DueDateEntity>,
   ) {}
 
-  async getAllDueDate() {
+  async getAllDueDate(): Promise<DueDateEntity[]> {
     return await this.dueDateEntity.find();
   }
 
@@ -197,8 +199,12 @@ export class ManagementService {
     }
   }
 
-  async getAllParentData() {
-    return await this.ManageMentCategoryEntites.find();
+  async getAllParentData(): Promise<ManagementParentOutput[]> {
+    const categories = await this.ManageMentCategoryEntites.createQueryBuilder(
+      "management_category_entites",
+    ).getMany();
+
+    return categories;
   }
 
   async getChildData(seqNo: string) {
@@ -210,58 +216,69 @@ export class ManagementService {
     if (childData) return childData.children;
   }
 
-  async saveCategoryData({ children }: ManageMentCategoryDto, seqNo?: string) {
-    if (seqNo) {
-      const category = await this.ManageMentCategoryEntites.findOne(
-        { seqNo },
-        { relations: ["children"] },
-      );
+  async saveCategoryData(
+    { children }: ManageMentSetPriceInput,
+    seqNo?: string,
+  ): Promise<ManageMentSetPriceOutput> {
+    try {
+      if (seqNo) {
+        const category = await this.ManageMentCategoryEntites.findOne(
+          { seqNo },
+          { relations: ["children"] },
+        );
 
-      const noSeqNo = children.filter((v) => v.seqNo === undefined);
+        const noSeqNo = children.filter((v) => v.seqNo === undefined);
 
-      if (category.children) {
-        for (let i = 0; i < category.children.length; i++) {
-          const isCategory = children.find(
-            (children) => children.seqNo === category.children[i].seqNo,
-          );
-          if (isCategory) {
-            await this.manageMentCategoryEntity.save({
-              ...category.children[i],
-              ...isCategory,
-            });
-          } else {
-            await this.manageMentCategoryEntity.delete({
-              seqNo: category.children[i].seqNo,
-            });
+        if (category.children) {
+          for (let i = 0; i < category.children.length; i++) {
+            const isCategory = children.find(
+              (children) => children.seqNo === category.children[i].seqNo,
+            );
+            if (isCategory) {
+              await this.manageMentCategoryEntity.save({
+                ...category.children[i],
+                ...isCategory,
+              });
+            } else {
+              await this.manageMentCategoryEntity.delete({
+                seqNo: category.children[i].seqNo,
+              });
+            }
           }
         }
-      }
 
-      await this.ManageMentCategoryEntites.save(category);
+        await this.ManageMentCategoryEntites.save(category);
 
-      if (noSeqNo.length > 0) {
+        if (noSeqNo.length > 0) {
+          const price = this.emptyPriceArray();
+
+          await createEntity(
+            noSeqNo,
+            category,
+            this.manageMentCategoryEntity,
+            price,
+          );
+
+          return { success: true };
+        }
+      } else {
+        const categoriesData = this.ManageMentCategoryEntites.save(
+          this.ManageMentCategoryEntites.create(children),
+        );
+
         const price = this.emptyPriceArray();
 
-        return createEntity(
-          noSeqNo,
-          category,
+        await createEntity(
+          children,
+          categoriesData,
           this.manageMentCategoryEntity,
           price,
         );
+
+        return { success: true };
       }
-    } else {
-      const categoriesData = this.ManageMentCategoryEntites.save(
-        this.ManageMentCategoryEntites.create(children),
-      );
-
-      const price = this.emptyPriceArray();
-
-      return createEntity(
-        children,
-        categoriesData,
-        this.manageMentCategoryEntity,
-        price,
-      );
+    } catch (error) {
+      return { error };
     }
   }
 
@@ -274,7 +291,7 @@ export class ManagementService {
     return category;
   }
 
-  async setPriceData(data: ManageMentCategoryEntityInput, seqNo: string) {
+  async setPriceData(data: ManageMentSetPriceInput, seqNo: string) {
     const queryRunner = this.connection.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();

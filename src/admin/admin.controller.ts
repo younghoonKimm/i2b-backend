@@ -1,11 +1,12 @@
 import { Controller, Post, Body, Put, UseGuards, Get } from "@nestjs/common";
 import { AdminService } from "./admin.service";
-import { AdminInfoInputDto } from "./dto/admin-info.dto";
+import {
+  AdminCreateInputDto,
+  AdminCreateOutputDto,
+  AdminMeOutPutDto,
+} from "./dto/admin-info.dto";
 import { AdminLoginInput, AdminLoginOutput } from "./dto/admin-login.dto";
-import { AdminEditInput } from "./dto/admin-edit.dto";
-import { AdminAuthUser } from "src/auth/auth-user.decorator";
-import { AdminInfoEntity } from "./entities/admin-info.entity";
-import { JwtService } from "src/jwt/jwt.service";
+import { AdminEditInput, AdminEditOutput } from "./dto/admin-edit.dto";
 import { AuthGuard } from "src/middlewares/auth.middleware";
 import { Token } from "src/decorator/admin.decorator";
 import {
@@ -13,26 +14,23 @@ import {
   ApiCreatedResponse,
   ApiTags,
   ApiBody,
-  ApiHeader,
-  ApiProperty,
   ApiBearerAuth,
 } from "@nestjs/swagger";
 
 @Controller("admin")
 @ApiTags("Admin")
 export class AdminController {
-  constructor(
-    private adminService: AdminService,
-    private readonly jwtService: JwtService,
-  ) {}
+  constructor(private adminService: AdminService) {}
 
   @Post("/create")
   @ApiOperation({ summary: "Admin 관리자 생성", description: "" })
   @ApiCreatedResponse({
     description: "Success",
-    type: AdminLoginOutput,
+    type: AdminCreateOutputDto,
   })
-  createAdminUser(@Body() adminInfo: AdminInfoInputDto) {
+  createAdminUser(
+    @Body() adminInfo: AdminCreateInputDto,
+  ): Promise<AdminCreateOutputDto> {
     return this.adminService.createAdminUser(adminInfo);
   }
 
@@ -52,17 +50,27 @@ export class AdminController {
   @UseGuards(AuthGuard)
   @Post("/me")
   @ApiOperation({ summary: "Admin 관리자 정보 수정", description: "" })
-  @ApiBearerAuth()
-  editAdminUser(@Token() token: any, @Body() adminEditInput: AdminEditInput) {
+  @ApiBearerAuth("bearerAuth")
+  @ApiCreatedResponse({
+    description: "Success",
+    type: AdminEditOutput,
+  })
+  editAdminUser(
+    @Token() token: any,
+    @Body() adminEditInput: AdminEditInput,
+  ): Promise<AdminEditOutput> {
     return this.adminService.editAdminUser(token, adminEditInput);
   }
-
+  // @ApiHeader({ name: "Bearer" })
   @UseGuards(AuthGuard)
   @Get("/me")
-  @ApiBearerAuth()
-  @ApiHeader({ name: "Bearer" })
+  @ApiBearerAuth("bearerAuth")
   @ApiOperation({ summary: "Admin 관리자 정보", description: "" })
-  getUserInfo(@Token() token: any) {
+  @ApiCreatedResponse({
+    description: "Success",
+    type: AdminMeOutPutDto,
+  })
+  getUserInfo(@Token() token: any): Promise<AdminMeOutPutDto> {
     return this.adminService.getUserInfo(token);
   }
 }

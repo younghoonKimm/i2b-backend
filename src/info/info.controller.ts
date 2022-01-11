@@ -11,8 +11,13 @@ import { ApiTags, ApiBearerAuth, ApiOperation } from "@nestjs/swagger";
 export class InfoController {
   constructor(private infoService: InfoService) {}
 
+  @Get("/categories")
+  getCategories() {
+    return this.infoService.getCategories();
+  }
+
   @Get()
-  @ApiOperation({ summary: "작업중", description: "rfp 작업중" })
+  @ApiOperation({ summary: "유저 정보", description: "유저 정보" })
   @ApiBearerAuth()
   getInfo(@Body() clientEmail: string) {
     return this.infoService.getUser(clientEmail);
@@ -20,7 +25,7 @@ export class InfoController {
 
   @UseGuards(HasID)
   @Post("/create")
-  @ApiOperation({ summary: "작업중", description: "rfp 정보" })
+  @ApiOperation({ summary: "유저 정보 저장", description: "유저 정보 저장" })
   @ApiBearerAuth()
   postFirstInfo(@Body() infoData: InfoDto, @Token() token?: any) {
     if (token) {
@@ -28,6 +33,10 @@ export class InfoController {
     }
     return this.infoService.createInfo(infoData);
   }
+
+  // baseInfo = "baseInfo",
+  // detailInfo = "detailInfo",
+  // fourthStep = "fourthStep",
 
   // @Post()
   // postSecondInfo() {

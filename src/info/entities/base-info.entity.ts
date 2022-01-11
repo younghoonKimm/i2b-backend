@@ -1,23 +1,38 @@
 import { Entity, Column, OneToOne, PrimaryGeneratedColumn } from "typeorm";
-import { IsString, IsNumber, Length } from "class-validator";
+import { IsString, IsNumber, Length, IsArray } from "class-validator";
 import { InfoEntity } from "src/common/entities/info.entity";
+import { required } from "joi";
+import { ApiProperty } from "@nestjs/swagger";
+import { RadioInput } from "src/common/dto/common.dto";
 
 @Entity()
 export class BaseInfoEntity {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn("uuid")
+  id: string;
 
   @Column()
   @IsNumber()
+  @ApiProperty({
+    example: 1,
+  })
   projectType: number;
 
-  @Column()
+  @Column("int", { array: true })
   @IsNumber()
-  projectStatus: number;
+  @ApiProperty({
+    example: [1],
+  })
+  projectStatus: RadioInput[];
 
   @Column({ nullable: true })
   @IsString()
-  targetDevice: string;
+  @ApiProperty({
+    example: "string",
+  })
+  targetDevice?: string;
+
+  // @Column("text", { array: true })
+  // projectRequestLists: string[];
 
   @OneToOne(() => InfoEntity, (infoEntity) => infoEntity.clientInfo, {
     onDelete: "CASCADE",

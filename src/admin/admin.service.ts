@@ -1,13 +1,15 @@
 import { Injectable } from "@nestjs/common";
-
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { AdminInfoEntity } from "./entities/admin-info.entity";
-import { AdminInfoInputDto, AdminMeOutPutDto } from "./dto/admin-info.dto";
+import {
+  AdminCreateInputDto,
+  AdminMeOutPutDto,
+  AdminCreateOutputDto,
+} from "./dto/admin-info.dto";
 import { AdminLoginInput, AdminLoginOutput } from "./dto/admin-login.dto";
-import { AdminEditInput } from "./dto/admin-edit.dto";
+import { AdminEditInput, AdminEditOutput } from "./dto/admin-edit.dto";
 import { JwtService } from "src/jwt/jwt.service";
-import { AuthService } from "src/auth/auth.service";
 
 @Injectable()
 export class AdminService {
@@ -17,18 +19,21 @@ export class AdminService {
     private readonly jwtService: JwtService,
   ) {}
   async createAdminUser(
-    userData: AdminInfoInputDto,
-  ): Promise<{ status: boolean }> {
+    userData: AdminCreateInputDto,
+  ): Promise<AdminCreateOutputDto> {
     const { adminId } = userData;
     try {
       const isAdmin = await this.adminInfo.findOne({ adminId });
       if (isAdmin) {
-        return;
+        return { success: false, error: "계정 중복" };
       } else {
         await this.adminInfo.save(this.adminInfo.create(userData));
-        return { status: true };
+        return { success: true };
       }
-    } catch {}
+    } catch (error) {
+      console.log(error);
+      return { error };
+    }
   }
 
   async loginAdminUser({
@@ -54,23 +59,27 @@ export class AdminService {
   async editAdminUser(
     authUser: string,
     { adminEmail, adminPw }: AdminEditInput,
-  ) {
-    const decoded = this.jwtService.verify(authUser.toString());
-    const user = await this.adminInfo.findOne({
-      id: decoded.id,
-    });
+  ): Promise<AdminEditOutput> {
+    try {
+      const decoded = this.jwtService.verify(authUser.toString());
+      const user = await this.adminInfo.findOne({
+        id: decoded.id,
+      });
 
-    if (!user) return { ok: false };
+      if (!user) return { success: false, error: "아이디 중복" };
 
-    if (adminEmail) {
-      user.adminEmail = adminEmail;
-      await this.adminInfo.save(user);
+      if (adminEmail) {
+        user.adminEmail = adminEmail;
+        await this.adminInfo.save(user);
+      }
+      if (adminPw) {
+        user.adminPw = adminPw;
+        await this.adminInfo.save(user);
+      }
+      return { success: true };
+    } catch (error) {
+      return { error };
     }
-    if (adminPw) {
-      user.adminPw = adminPw;
-      await this.adminInfo.save(user);
-    }
-    return { ok: true };
   }
 
   async getUserInfo(token: any): Promise<AdminMeOutPutDto> {
