@@ -5,6 +5,7 @@ import { v4 as uuidv4 } from "uuid";
 
 import {
   ManageMentCategoryDto,
+  ManagementParentOutput,
   ManageMentSetPriceInput,
 } from "./dto/category.dto";
 import {
@@ -58,7 +59,7 @@ export class ManagementService {
     private readonly dueDateEntity: Repository<DueDateEntity>,
   ) {}
 
-  async getAllDueDate() {
+  async getAllDueDate(): Promise<DueDateEntity[]> {
     return await this.dueDateEntity.find();
   }
 
@@ -197,8 +198,12 @@ export class ManagementService {
     }
   }
 
-  async getAllParentData() {
-    return await this.ManageMentCategoryEntites.find();
+  async getAllParentData(): Promise<ManagementParentOutput[]> {
+    const categories = await this.ManageMentCategoryEntites.createQueryBuilder(
+      "management_category_entites",
+    ).getMany();
+
+    return categories;
   }
 
   async getChildData(seqNo: string) {

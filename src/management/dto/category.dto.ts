@@ -4,7 +4,7 @@ import {
   ManageMentCategoryEntity,
 } from "../entities/category.entity";
 import { PrimaryGeneratedColumn } from "typeorm";
-import { PickType, ApiProperty } from "@nestjs/swagger";
+import { PickType, ApiProperty, PartialType, OmitType } from "@nestjs/swagger";
 import { exampleManagementChildren } from "src/config";
 
 export class ManageMentCategoryDto extends CategoryEntity {
@@ -17,5 +17,10 @@ export class ManageMentCategoryDto extends CategoryEntity {
 
 export class ManageMentSetPriceInput extends PickType(
   ManageMentCategoryEntites,
-  ["children"],
+  ["children"] as const,
+) {}
+
+export class ManagementParentOutput extends PickType(
+  ManageMentCategoryEntites,
+  ["name", "isHidden", "order"],
 ) {}

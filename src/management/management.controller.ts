@@ -6,6 +6,7 @@ import { JwtService } from "src/jwt/jwt.service";
 import {
   ManageMentCategoryDto,
   ManageMentSetPriceInput,
+  ManagementParentOutput,
 } from "./dto/category.dto";
 import { AuthService } from "src/auth/auth.service";
 import { AuthGuard } from "src/middlewares/auth.middleware";
@@ -18,6 +19,7 @@ import {
   ApiCreatedResponse,
   ApiBearerAuth,
 } from "@nestjs/swagger";
+import { DueDateEntity } from "./entities/dueDate.entity";
 
 @Controller("mng")
 @ApiTags("Management")
@@ -32,7 +34,11 @@ export class MangaeMentController {
   @ApiBearerAuth()
   @ApiOperation({ summary: "개월 수 반환", description: "" })
   // @ApiCreatedResponse({ description: "get Due Date" })
-  async getDueDate() {
+  @ApiCreatedResponse({
+    description: "Success",
+    type: [DueDateEntity],
+  })
+  async getDueDate(): Promise<DueDateEntity[]> {
     return this.manageMentService.getAllDueDate();
   }
 
@@ -40,7 +46,11 @@ export class MangaeMentController {
   @Get("/categories")
   @ApiBearerAuth()
   @ApiOperation({ summary: "카테고리 반환", description: "" })
-  async getCategoryParent() {
+  @ApiCreatedResponse({
+    description: "Success",
+    type: [ManagementParentOutput],
+  })
+  async getCategoryParent(): Promise<ManagementParentOutput[]> {
     return this.manageMentService.getAllParentData();
   }
 
