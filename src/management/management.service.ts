@@ -5,7 +5,7 @@ import { v4 as uuidv4 } from "uuid";
 
 import {
   ManageMentCategoryDto,
-  ManageMentCategoryEntityInput,
+  ManageMentSetPriceInput,
 } from "./dto/category.dto";
 import {
   ManageMentCategoryEntites,
@@ -274,7 +274,7 @@ export class ManagementService {
     return category;
   }
 
-  async setPriceData(data: ManageMentCategoryEntityInput, seqNo: string) {
+  async setPriceData(data: ManageMentSetPriceInput, seqNo: string) {
     const queryRunner = this.connection.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();

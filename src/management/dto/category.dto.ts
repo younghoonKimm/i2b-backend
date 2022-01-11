@@ -1,18 +1,21 @@
 import {
   CategoryEntity,
   ManageMentCategoryEntites,
+  ManageMentCategoryEntity,
 } from "../entities/category.entity";
-import { PrimaryGeneratedColumn, Column } from "typeorm";
-import { PickType } from "@nestjs/swagger";
+import { PrimaryGeneratedColumn } from "typeorm";
+import { PickType, ApiProperty } from "@nestjs/swagger";
+import { exampleManagementChildren } from "src/config";
 
 export class ManageMentCategoryDto extends CategoryEntity {
   @PrimaryGeneratedColumn("uuid")
   seqNo: string;
 
-  children?: any;
+  @ApiProperty(exampleManagementChildren)
+  children?: ManageMentCategoryEntity[];
 }
 
-export class ManageMentCategoryEntityInput extends PickType(
+export class ManageMentSetPriceInput extends PickType(
   ManageMentCategoryEntites,
   ["children"],
 ) {}

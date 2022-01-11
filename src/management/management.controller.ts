@@ -5,7 +5,7 @@ import { AdminAuthUser } from "src/auth/auth-user.decorator";
 import { JwtService } from "src/jwt/jwt.service";
 import {
   ManageMentCategoryDto,
-  ManageMentCategoryEntityInput,
+  ManageMentSetPriceInput,
 } from "./dto/category.dto";
 import { AuthService } from "src/auth/auth.service";
 import { AuthGuard } from "src/middlewares/auth.middleware";
@@ -78,7 +78,7 @@ export class MangaeMentController {
   @ApiOperation({ summary: "카테고리 세부 가격 수정", description: "" })
   async setPriceData(
     @Body()
-    data: ManageMentCategoryEntityInput,
+    data: ManageMentSetPriceInput,
     @Param("seqNo") seqNo: string,
   ) {
     return this.manageMentService.setPriceData(data, seqNo);
