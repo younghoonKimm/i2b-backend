@@ -11,6 +11,11 @@ import { ApiTags, ApiBearerAuth, ApiOperation } from "@nestjs/swagger";
 export class InfoController {
   constructor(private infoService: InfoService) {}
 
+  @Get("/categories")
+  getCategories() {
+    return this.infoService.getCategories();
+  }
+
   @Get()
   @ApiOperation({ summary: "유저 정보", description: "유저 정보" })
   @ApiBearerAuth()
@@ -28,6 +33,10 @@ export class InfoController {
     }
     return this.infoService.createInfo(infoData);
   }
+
+  // baseInfo = "baseInfo",
+  // detailInfo = "detailInfo",
+  // fourthStep = "fourthStep",
 
   // @Post()
   // postSecondInfo() {

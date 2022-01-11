@@ -1,6 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { Column } from "typeorm";
-import { IsBoolean } from "class-validator";
+import { IsBoolean, Max, Min } from "class-validator";
 
 export class CommonOutPut {
   @ApiProperty({
@@ -16,4 +16,10 @@ export class CommonOutPut {
   @Column()
   @IsBoolean()
   error?: string;
+}
+
+export class RadioInput {
+  @Min(0)
+  @Max(4)
+  number: number;
 }

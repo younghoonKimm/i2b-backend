@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 
-import { InfoEntity } from "../common/entities/info.entity";
+import { InfoEntity, StatusStep } from "../common/entities/info.entity";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Any, Brackets, Connection, In, QueryRunner } from "typeorm";
 import { Repository } from "typeorm";
@@ -10,8 +10,9 @@ import { InfoDto } from "src/common/dto/info.dto";
 import { JwtService } from "src/jwt/jwt.service";
 import { BaseInfoEntity } from "./entities/base-info.entity";
 import { MailService } from "src/mail/mail.service";
+import { ManageMentCategoryEntites } from "src/management/entities/category.entity";
 
-const infoNameArray = ["clientInfo", "baseInfo"];
+const infoArray = { clientInfo: ClientInfoEntity, baseInfo: BaseInfoEntity };
 
 @Injectable()
 export class InfoService {
@@ -22,6 +23,8 @@ export class InfoService {
     private readonly clientInfo: Repository<ClientInfoEntity>,
     @InjectRepository(BaseInfoEntity)
     private readonly baseInfo: Repository<BaseInfoEntity>,
+    @InjectRepository(ManageMentCategoryEntites)
+    private readonly categoryEntity: Repository<ManageMentCategoryEntites>,
     private readonly jwtService: JwtService,
     private mailService: MailService,
   ) {}
@@ -38,35 +41,46 @@ export class InfoService {
     return await this.info.findOne({ id });
   }
 
-  async saveInfo(infoData: InfoDto, id: string): Promise<ClientInfoOutput> {
+  async getInfo(id: string) {
+    // return await this.info.findOne({id},{relations:})
+  }
+
+  async getCategories() {
+    return await this.categoryEntity.find();
+  }
+
+  async saveInfo(infoData: InfoDto, id?: string): Promise<ClientInfoOutput> {
     const queryRunner = this.connection.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
 
     try {
-      const { clientInfo } = infoData;
-
-      const exists = await this.info.findOne(
-        { id },
-        { relations: [...infoNameArray] },
-      );
+      const exists = await this.info
+        .createQueryBuilder("info_entity")
+        .leftJoinAndSelect(`info_entity.clientInfo`, "clientInfo")
+        .leftJoinAndSelect(`info_entity.baseInfo`, "baseInfo")
+        .getOne();
 
       if (exists) {
-        const { clientInfo, baseInfo } = infoData;
-        const infoName = infoNameArray[0]; //0 will be status
+        if (exists[infoData.status]) {
+          await queryRunner.manager.save(infoArray[infoData.status], {
+            ...exists[infoData.status],
+            ...infoData[infoData.status],
+          });
+        } else {
+          const infoStatusData = await queryRunner.manager.save(
+            infoArray[infoData.status],
+            infoData[infoData.status],
+          );
 
-        await this[infoData.status].save({
-          ...exists.clientInfo,
-          ...clientInfo,
-        });
-
-        await queryRunner.manager.save(exists);
+          await queryRunner.manager.save(InfoEntity, {
+            ...exists,
+            status: StatusStep[infoData.status],
+            [infoData.status]: infoStatusData,
+          });
+        }
 
         await queryRunner.commitTransaction();
-        // await this.info.save(exists);
-
-        // const token = this.jwtService.sign({ id: exists.id });
-        // return { token };
       } else {
         await queryRunner.rollbackTransaction();
         return { error: "오류" };
@@ -82,17 +96,16 @@ export class InfoService {
   async createInfo(infoData: InfoDto): Promise<ClientInfoOutput> {
     const queryRunner = this.connection.createQueryRunner();
     try {
-      const exists = await this.info.findOne(
-        { clientEmail: infoData.clientEmail },
-        // { relations: [...infoNameArray] },
-      );
+      const exists = await this.info.findOne({
+        clientEmail: infoData.clientEmail,
+      });
 
       if (exists) {
         const token = this.jwtService.sign({ id: exists.id });
         return { token, error: "존재하는 이메일" };
       }
 
-      const { clientInfo, baseInfo, detailInfo, password } = infoData;
+      const { clientInfo, password } = infoData;
 
       const crateClientInfo = await this.clientInfo.save(
         this.clientInfo.create(clientInfo),
@@ -125,8 +138,4 @@ export class InfoService {
   }
 
   async uploadFile() {}
-
-  async saveInfoInDetailPage() {
-    await console.log(32223);
-  }
 }

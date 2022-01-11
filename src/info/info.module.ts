@@ -6,6 +6,7 @@ import { InfoEntity } from "src/common/entities/info.entity";
 import { ClientInfoEntity } from "./entities/client-info.entity";
 import { BaseInfoEntity } from "./entities/base-info.entity";
 import { DetailInfo } from "./entities/detail-info.entity";
+import { ManageMentCategoryEntites } from "src/management/entities/category.entity";
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { DetailInfo } from "./entities/detail-info.entity";
       ClientInfoEntity,
       BaseInfoEntity,
       DetailInfo,
+      ManageMentCategoryEntites,
     ]),
   ],
   controllers: [InfoController],

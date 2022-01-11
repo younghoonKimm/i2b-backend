@@ -7,6 +7,7 @@ import { InternalServerErrorException } from "@nestjs/common";
 import { ClientInfoEntity } from "src/info/entities/client-info.entity";
 import { BaseInfoEntity } from "src/info/entities/base-info.entity";
 import { DetailInfo } from "src/info/entities/detail-info.entity";
+import { ApiProperty } from "@nestjs/swagger";
 
 export enum StatusStep {
   clientInfo = "clientInfo",
@@ -21,15 +22,24 @@ export class InfoEntity extends CommonEntitiy {
   @Column()
   @IsEmail()
   @Length(5, 35)
-  clientEmail: string;
+  @ApiProperty({
+    example: "dev.olivestonelab.com",
+  })
+  clientEmail?: string;
 
   @Column({ nullable: true })
   @IsString()
   @Length(5)
+  @ApiProperty({
+    example: "olivestonlab##",
+  })
   password?: string;
 
   @Column({ type: "enum", enum: StatusStep, default: StatusStep.clientInfo })
   @IsEnum(StatusStep)
+  @ApiProperty({
+    example: StatusStep.clientInfo,
+  })
   status: StatusStep;
 
   @OneToOne(() => ClientInfoEntity, (clientInfo) => clientInfo.info, {
@@ -37,6 +47,7 @@ export class InfoEntity extends CommonEntitiy {
     onDelete: "CASCADE",
   })
   @JoinColumn()
+  @ApiProperty()
   clientInfo: ClientInfoEntity;
 
   @OneToOne(() => BaseInfoEntity, (baseInfo) => baseInfo.info, {
@@ -44,6 +55,7 @@ export class InfoEntity extends CommonEntitiy {
     onDelete: "SET NULL",
   })
   @JoinColumn()
+  @ApiProperty()
   baseInfo: BaseInfoEntity;
 
   @OneToOne(() => DetailInfo, (baseInfo) => baseInfo.info, {
@@ -51,6 +63,7 @@ export class InfoEntity extends CommonEntitiy {
     onDelete: "SET NULL",
   })
   @JoinColumn()
+  @ApiProperty()
   detailInfo: DetailInfo;
 
   @BeforeInsert()
