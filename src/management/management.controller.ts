@@ -26,8 +26,7 @@ import { DueDateEntity } from "./entities/dueDate.entity";
 @ApiTags("Management")
 export class MangaeMentController {
   constructor(private manageMentService: ManagementService) {
-    // this.manageMentService.registerDueDate(dueDateValue);
-    // this.manageMentService.registerPriceData(dueDateValue);
+    this.manageMentService.registerDueDate(dueDateValue);
   }
 
   @UseGuards(AuthGuard)

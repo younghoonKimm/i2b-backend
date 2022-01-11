@@ -133,6 +133,7 @@ export class ManagementService {
         }
         await queryRunner.commitTransaction();
       }
+      await this.registerPriceData(dueDateValue);
     } catch {
       await queryRunner.rollbackTransaction();
     }
