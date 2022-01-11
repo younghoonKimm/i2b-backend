@@ -11,6 +11,6 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe());
   const port = process.env.PORT || 3000;
   setupSwagger(app);
-  await app.listen(port);
+  await app.listen(process.env.PORT || port);
 }
 bootstrap();
