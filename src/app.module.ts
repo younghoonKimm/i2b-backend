@@ -74,7 +74,7 @@ import { JWTMiddlewares } from "./middlewares/jwt.middlewares";
       ssl: {
         rejectUnauthorized: false,
       },
-      synchronize: process.env.NODE_ENV !== "production",
+      synchronize: true,
       logging: process.env.NODE_ENV !== "production",
     }),
     JwtModule.forRoot({
