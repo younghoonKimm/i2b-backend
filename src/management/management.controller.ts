@@ -8,6 +8,7 @@ import {
   ManageMentSetPriceInput,
   ManagementParentOutput,
   ManageMentSetPriceOutput,
+  ManageMentSetDataInput,
 } from "./dto/category.dto";
 import { AuthService } from "src/auth/auth.service";
 import { AuthGuard } from "src/middlewares/auth.middleware";
@@ -58,7 +59,10 @@ export class MangaeMentController {
   @UseGuards(AuthGuard)
   @Get("/categories/:seqNo?")
   @ApiBearerAuth("bearerAuth")
-  @ApiOperation({ summary: "카테고리 세부 항목", description: "" })
+  @ApiOperation({
+    summary: "카테고리 세부 항목",
+    description: "seqNo는 최상위 부모값",
+  })
   async getCategoryChildren(@Param("seqNo") seqNo?: string) {
     return this.manageMentService.getChildData(seqNo);
   }
@@ -66,26 +70,29 @@ export class MangaeMentController {
   @UseGuards(AuthGuard)
   @Post("/categories/:seqNo?")
   @ApiBearerAuth("bearerAuth")
-  @ApiOperation({ summary: "카테고리 세부 항목 수정", description: "" })
+  @ApiOperation({
+    summary: "카테고리 세부 항목 수정",
+    description: "seqNo는 최상위 부모값",
+  })
   @ApiCreatedResponse({
     description: "Sucess",
     type: ManageMentSetPriceOutput,
   })
   async saveCategoryData(
     @Body()
-    data: ManageMentSetPriceInput,
+    data: ManageMentSetDataInput,
     @Param("seqNo") seqNo?: string,
   ): Promise<ManageMentSetPriceOutput> {
     return this.manageMentService.saveCategoryData(data, seqNo);
   }
 
-  @UseGuards(AuthGuard)
-  @Get("/categories/:seqNo/Price")
-  @ApiBearerAuth("bearerAuth")
-  @ApiOperation({ summary: "카테고리 세부 가격", description: "" })
-  async getPriceData(@Param("seqNo") seqNo?: string) {
-    return this.manageMentService.getPriceData(seqNo);
-  }
+  // @UseGuards(AuthGuard)
+  // @Get("/categories/:seqNo/Price")
+  // @ApiBearerAuth("bearerAuth")
+  // @ApiOperation({ summary: "카테고리 세부 가격", description: "" })
+  // async getPriceData(@Param("seqNo") seqNo?: string) {
+  //   return this.manageMentService.getPriceData(seqNo);
+  // }
 
   @UseGuards(AuthGuard)
   @Post("/categories/:seqNo/Price")

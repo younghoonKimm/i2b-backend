@@ -20,6 +20,14 @@ export class ManageMentSetPriceInput extends PickType(ManageMentCategoryDto, [
   "children",
 ] as const) {}
 
+export class ManageMentSetDataInput extends CategoryEntity {
+  @PrimaryGeneratedColumn("uuid")
+  seqNo: string;
+
+  @ApiProperty(exampleManagementChildren)
+  children?: ManageMentCategoryEntity[];
+}
+
 export class ManageMentSetPriceOutput extends CommonOutPut {}
 
 export class ManagementParentOutput extends PickType(

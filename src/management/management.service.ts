@@ -8,6 +8,7 @@ import {
   ManagementParentOutput,
   ManageMentSetPriceInput,
   ManageMentSetPriceOutput,
+  ManageMentSetDataInput,
 } from "./dto/category.dto";
 import {
   ManageMentCategoryEntites,
@@ -234,7 +235,7 @@ export class ManagementService {
   }
 
   async saveCategoryData(
-    { children }: ManageMentSetPriceInput,
+    { children }: ManageMentSetDataInput,
     seqNo?: string,
   ): Promise<ManageMentSetPriceOutput> {
     try {
