@@ -12,7 +12,7 @@ import {
 import { AuthService } from "src/auth/auth.service";
 import { AuthGuard } from "src/middlewares/auth.middleware";
 import { Token } from "src/decorator/admin.decorator";
-import { dueDateValue } from "src/config";
+import { dueDateValue, parentData } from "src/config";
 import { ManageMentCategoryEntites } from "./entities/category.entity";
 import {
   ApiTags,
@@ -28,6 +28,7 @@ export class MangaeMentController {
   constructor(private manageMentService: ManagementService) {
     this.manageMentService.registerDueDate(dueDateValue);
     this.manageMentService.registerPriceData(dueDateValue);
+    this.manageMentService.setParentData();
   }
 
   @UseGuards(AuthGuard)

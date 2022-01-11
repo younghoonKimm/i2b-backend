@@ -54,3 +54,11 @@ export const exampleManagementChildren = {
     ],
   },
 };
+
+export const parentData = [
+  { name: "UI/UX 전략", order: 0 },
+  { name: "GUI 디자인", order: 1 },
+  { name: "모션", order: 2 },
+  { name: "프로토타입", order: 3 },
+  { name: "개발", order: 4 },
+];
