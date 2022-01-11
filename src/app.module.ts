@@ -34,10 +34,11 @@ import { JWTMiddlewares } from "./middlewares/jwt.middlewares";
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: process.env.NODE_ENV === "dev" ? ".env.dev" : ".env.prod",
-      ignoreEnvFile: process.env.NODE_ENV === "prod",
+      envFilePath:
+        process.env.NODE_ENV === "dev" ? ".env.dev" : ".env.production",
+      ignoreEnvFile: process.env.NODE_ENV === "production",
       validationSchema: Joi.object({
-        NODE_ENV: Joi.string().valid("dev", "prod"),
+        NODE_ENV: Joi.string().valid("dev", "production"),
         DB_HOST: Joi.string().required(),
         DB_PORT: Joi.string().required(),
         DB_USERNAME: Joi.string().required(),
@@ -66,8 +67,8 @@ import { JWTMiddlewares } from "./middlewares/jwt.middlewares";
         ManageMentCategoryEntity,
         DueDateEntity,
       ],
-      synchronize: process.env.NODE_ENV !== "prod",
-      logging: process.env.NODE_ENV !== "prod",
+      synchronize: process.env.NODE_ENV !== "production",
+      logging: process.env.NODE_ENV !== "production",
     }),
     JwtModule.forRoot({
       privateKey: process.env.PRIVATE_KEY,
