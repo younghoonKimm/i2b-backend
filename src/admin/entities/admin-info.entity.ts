@@ -1,11 +1,12 @@
 import { Entity, Column, BeforeInsert, BeforeUpdate } from "typeorm";
 import { InternalServerErrorException } from "@nestjs/common";
 import { IsString, IsNumber, Length, IsEmail, IsEnum } from "class-validator";
+import { Exclude } from "class-transformer";
 
 import * as bcrypt from "bcrypt";
 import { CommonEntitiy } from "src/common/entities/common.entity";
 
-enum AdminRole {
+export enum AdminRole {
   System = "System",
   Watch = "Watch",
 }
@@ -32,6 +33,10 @@ export class AdminInfoEntity extends CommonEntitiy {
   @Column()
   @IsEmail()
   adminEmail: string;
+
+  // @Column({ nullable: true })
+  // @Exclude()
+  // currentHashedRefreshToken?: string;
 
   @BeforeInsert()
   @BeforeUpdate()

@@ -14,7 +14,6 @@ import {
   ApiCreatedResponse,
   ApiTags,
   ApiBody,
-  ApiHeader,
   ApiBearerAuth,
 } from "@nestjs/swagger";
 
@@ -51,7 +50,7 @@ export class AdminController {
   @UseGuards(AuthGuard)
   @Post("/me")
   @ApiOperation({ summary: "Admin 관리자 정보 수정", description: "" })
-  @ApiBearerAuth()
+  @ApiBearerAuth("bearerAuth")
   @ApiCreatedResponse({
     description: "Success",
     type: AdminEditOutput,
@@ -65,7 +64,7 @@ export class AdminController {
   // @ApiHeader({ name: "Bearer" })
   @UseGuards(AuthGuard)
   @Get("/me")
-  @ApiBearerAuth()
+  @ApiBearerAuth("bearerAuth")
   @ApiOperation({ summary: "Admin 관리자 정보", description: "" })
   @ApiCreatedResponse({
     description: "Success",

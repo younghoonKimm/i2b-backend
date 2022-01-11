@@ -7,6 +7,7 @@ import {
   ManageMentCategoryDto,
   ManageMentSetPriceInput,
   ManagementParentOutput,
+  ManageMentSetPriceOutput,
 } from "./dto/category.dto";
 import { AuthService } from "src/auth/auth.service";
 import { AuthGuard } from "src/middlewares/auth.middleware";
@@ -31,7 +32,7 @@ export class MangaeMentController {
 
   @UseGuards(AuthGuard)
   @Get("/duedate")
-  @ApiBearerAuth()
+  @ApiBearerAuth("bearerAuth")
   @ApiOperation({ summary: "개월 수 반환", description: "" })
   // @ApiCreatedResponse({ description: "get Due Date" })
   @ApiCreatedResponse({
@@ -44,7 +45,7 @@ export class MangaeMentController {
 
   @UseGuards(AuthGuard)
   @Get("/categories")
-  @ApiBearerAuth()
+  @ApiBearerAuth("bearerAuth")
   @ApiOperation({ summary: "카테고리 반환", description: "" })
   @ApiCreatedResponse({
     description: "Success",
@@ -56,7 +57,7 @@ export class MangaeMentController {
 
   @UseGuards(AuthGuard)
   @Get("/categories/:seqNo?")
-  @ApiBearerAuth()
+  @ApiBearerAuth("bearerAuth")
   @ApiOperation({ summary: "카테고리 세부 항목", description: "" })
   async getCategoryChildren(@Param("seqNo") seqNo?: string) {
     return this.manageMentService.getChildData(seqNo);
@@ -64,19 +65,23 @@ export class MangaeMentController {
 
   @UseGuards(AuthGuard)
   @Post("/categories/:seqNo?")
-  @ApiBearerAuth()
+  @ApiBearerAuth("bearerAuth")
   @ApiOperation({ summary: "카테고리 세부 항목 수정", description: "" })
+  @ApiCreatedResponse({
+    description: "Sucess",
+    type: ManageMentSetPriceOutput,
+  })
   async saveCategoryData(
     @Body()
-    data: ManageMentCategoryDto,
+    data: ManageMentSetPriceInput,
     @Param("seqNo") seqNo?: string,
-  ) {
+  ): Promise<ManageMentSetPriceOutput> {
     return this.manageMentService.saveCategoryData(data, seqNo);
   }
 
   @UseGuards(AuthGuard)
   @Get("/categories/:seqNo/Price")
-  @ApiBearerAuth()
+  @ApiBearerAuth("bearerAuth")
   @ApiOperation({ summary: "카테고리 세부 가격", description: "" })
   async getPriceData(@Param("seqNo") seqNo?: string) {
     return this.manageMentService.getPriceData(seqNo);
@@ -84,7 +89,7 @@ export class MangaeMentController {
 
   @UseGuards(AuthGuard)
   @Post("/categories/:seqNo/Price")
-  @ApiBearerAuth()
+  @ApiBearerAuth("bearerAuth")
   @ApiOperation({ summary: "카테고리 세부 가격 수정", description: "" })
   async setPriceData(
     @Body()
