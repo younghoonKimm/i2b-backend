@@ -220,17 +220,7 @@ export class ManagementService {
       { relations: ["children"] },
     );
 
-    const mapping = childData.children.map((value) => {
-      return {
-        seqNo: value.seqNo,
-        name: value.name,
-        order: value.order,
-        isHidden: value.isHidden,
-        children: value.children,
-      };
-    });
-
-    if (childData) return mapping;
+    if (childData) return childData.children;
   }
 
   async setParentData() {

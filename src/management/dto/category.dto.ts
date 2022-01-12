@@ -4,8 +4,12 @@ import {
   ManageMentCategoryEntity,
 } from "../entities/category.entity";
 import { PrimaryGeneratedColumn } from "typeorm";
-import { PickType, ApiProperty, PartialType, OmitType } from "@nestjs/swagger";
-import { exampleManagementChildren } from "src/config";
+import { PickType, ApiProperty, OmitType } from "@nestjs/swagger";
+import {
+  exampleManagementChildren,
+  exampleManagementPriceChildren,
+  exampleManagementSetChildren,
+} from "src/config";
 import { CommonOutPut } from "src/common/dto/common.dto";
 
 export class ManageMentCategoryDto extends CategoryEntity {
@@ -16,13 +20,35 @@ export class ManageMentCategoryDto extends CategoryEntity {
   children?: ManageMentCategoryEntity[];
 }
 
-export class ManageMentSetPriceInput extends PickType(ManageMentCategoryDto, [
-  "children",
-] as const) {}
+class ManageMentSetPriceInputChildrenDto extends PickType(
+  ManageMentCategoryEntity,
+  ["seqNo", "price"],
+) {}
 
-export class ManageMentSetDataInput extends PickType(ManageMentCategoryDto, [
-  "children",
-] as const) {}
+class ManageMentSetDataInputChildrenDto extends OmitType(
+  ManageMentCategoryEntity,
+  ["price"],
+) {}
+
+// export class ManageMentSetDataInput extends PickType(ManageMentCategoryDto, [
+//   "children",
+// ] as const) { }
+
+export class ManageMentSetDataInput {
+  @PrimaryGeneratedColumn("uuid")
+  seqNo: string;
+
+  @ApiProperty(exampleManagementSetChildren)
+  children?: ManageMentSetDataInputChildrenDto[];
+}
+
+export class ManageMentSetPriceInput {
+  @PrimaryGeneratedColumn("uuid")
+  seqNo: string;
+
+  @ApiProperty(exampleManagementPriceChildren)
+  children?: ManageMentSetPriceInputChildrenDto[];
+}
 
 export class ManageMentSetPriceOutput extends CommonOutPut {}
 
