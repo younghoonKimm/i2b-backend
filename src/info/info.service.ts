@@ -24,7 +24,7 @@ export class InfoService {
     @InjectRepository(BaseInfoEntity)
     private readonly baseInfo: Repository<BaseInfoEntity>,
     @InjectRepository(ManageMentCategoryEntites)
-    private readonly categoryEntity: Repository<ManageMentCategoryEntites>,
+    private readonly manageMentCategoryEntity: Repository<ManageMentCategoryEntites>,
     private readonly jwtService: JwtService,
     private mailService: MailService,
   ) {}
@@ -46,7 +46,7 @@ export class InfoService {
   }
 
   async getCategories() {
-    return await this.categoryEntity.find();
+    return await this.manageMentCategoryEntity.find();
   }
 
   async saveInfo(infoData: InfoDto, id?: string): Promise<ClientInfoOutput> {
@@ -141,6 +141,4 @@ export class InfoService {
       queryRunner.release();
     }
   }
-
-  async uploadFile() {}
 }

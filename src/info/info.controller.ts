@@ -4,8 +4,13 @@ import { InfoService } from "./info.service";
 import { InfoDto } from "src/common/dto/info.dto";
 import { HasID } from "src/middlewares/hasid.middleware";
 import { Token } from "src/decorator/admin.decorator";
-import { ApiTags, ApiBearerAuth, ApiOperation } from "@nestjs/swagger";
-import { JwtService } from "src/jwt/jwt.service";
+import {
+  ApiTags,
+  ApiBearerAuth,
+  ApiOperation,
+  ApiCreatedResponse,
+} from "@nestjs/swagger";
+import { ManageMentCategoryEntites } from "src/management/entities/category.entity";
 
 @Controller("info")
 @ApiTags("Info")
@@ -13,6 +18,10 @@ export class InfoController {
   constructor(private infoService: InfoService) {}
 
   @Get("/categories")
+  @ApiCreatedResponse({
+    description: "Sucess",
+    type: ManageMentCategoryEntites,
+  })
   getCategories() {
     return this.infoService.getCategories();
   }
