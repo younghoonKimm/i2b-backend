@@ -372,6 +372,41 @@ export const exampleManagementChildren = {
   ],
 };
 
+export const exampleManagementSetChildren = {
+  example: [
+    {
+      seqNo: "d68c80a8-6de6-44e6-a744-fd2c45ce5155",
+      name: "sddasfdddasd",
+      order: 0,
+      isHidden: false,
+      children: [
+        {
+          name: "ddddddd",
+          order: 0,
+          seqNo: "e64da15f-31f7-421b-a5ed-0b6affcfb60b",
+          children: [],
+          isHidden: false,
+        },
+      ],
+    },
+    {
+      seqNo: "42809c19-34df-4c30-b41f-81c1234f8e32",
+      name: "test",
+      order: 1,
+      isHidden: false,
+      children: [
+        {
+          name: "test",
+          order: 0,
+          seqNo: "d54a4b14-f5b8-47a7-9817-d6f380122765",
+          children: [],
+          isHidden: false,
+        },
+      ],
+    },
+  ],
+};
+
 export const exampleManagementPriceChildren = {
   example: [
     {
