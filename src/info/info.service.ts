@@ -1,16 +1,18 @@
 import { Injectable } from "@nestjs/common";
 
-import { InfoEntity, StatusStep } from "../common/entities/info.entity";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Any, Brackets, Connection, In, QueryRunner } from "typeorm";
-import { Repository } from "typeorm";
+import { Cron, SchedulerRegistry } from "@nestjs/schedule";
+import { Connection, Repository } from "typeorm";
+
+import { InfoEntity, StatusStep } from "../common/entities/info.entity";
 import { ClientInfoEntity } from "./entities/client-info.entity";
-import { ClientInfoDto, ClientInfoOutput } from "./dto/client-info.dto";
+import { ClientInfoOutput } from "./dto/client-info.dto";
 import { InfoDto } from "src/common/dto/info.dto";
 import { JwtService } from "src/jwt/jwt.service";
 import { BaseInfoEntity } from "./entities/base-info.entity";
 import { MailService } from "src/mail/mail.service";
 import { ManageMentCategoryEntites } from "src/management/entities/category.entity";
+import { tokenInterface } from "src/common/dto/common.dto";
 
 const infoArray = { clientInfo: ClientInfoEntity, baseInfo: BaseInfoEntity };
 
@@ -26,15 +28,19 @@ export class InfoService {
     @InjectRepository(ManageMentCategoryEntites)
     private readonly manageMentCategoryEntity: Repository<ManageMentCategoryEntites>,
     private readonly jwtService: JwtService,
+    private schedulerRegistry: SchedulerRegistry,
     private mailService: MailService,
   ) {}
 
-  async getUser(clientEmail: string) {
-    const user = await this.info.findOne(clientEmail, {
-      relations: ["clientInfo", "baseInfo"],
-    });
-
-    return user;
+  async getUser({ id }: tokenInterface) {
+    try {
+      const user = await this.info.findOne(id, {
+        relations: ["clientInfo", "baseInfo", "detailInfo", "scheduleinfo"],
+      });
+      return user;
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   async findById(id: string): Promise<InfoDto> {
@@ -140,5 +146,36 @@ export class InfoService {
     } finally {
       queryRunner.release();
     }
+  }
+
+  // @Cron("0 1 * * *", {
+  //   name: "deleteNotComplete",
+  // })
+  @Cron("10 * * * * *", {
+    name: "deleteNotComplete",
+  })
+  async deleteNotComplete() {
+    const queryRunner = this.connection.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
+    // const compareDate = new Date()
+    //   .setDate(new Date().getDate() + 7)
+    //   .toISOString();
+
+    const compareDate = new Date(
+      Date.now() - 7 * 24 * 60 * 60 * 1000,
+    ).toISOString();
+
+    const cate = await queryRunner.query(
+      `SELECT * FROM info_entity
+         WHERE "updateAt" >= '${compareDate}'`,
+    );
+
+    console.log(cate);
+    return await queryRunner.query(
+      `DELETE FROM info_entity
+         WHERE "updateAt" >= '${compareDate}'`,
+    );
   }
 }

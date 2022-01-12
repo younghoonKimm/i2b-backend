@@ -7,6 +7,7 @@ import { ClientInfoEntity } from "./entities/client-info.entity";
 import { BaseInfoEntity } from "./entities/base-info.entity";
 import { DetailInfo } from "./entities/detail-info.entity";
 import { ManageMentCategoryEntites } from "src/management/entities/category.entity";
+import { ScheduleInfoEntity } from "./entities/schedule-Info.entity";
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { ManageMentCategoryEntites } from "src/management/entities/category.enti
       ClientInfoEntity,
       BaseInfoEntity,
       DetailInfo,
+      ScheduleInfoEntity,
       ManageMentCategoryEntites,
     ]),
   ],

@@ -29,6 +29,9 @@ import {
 } from "./management/entities/category.entity";
 import { AuthMoudle } from "./auth/auth.module";
 import { JWTMiddlewares } from "./middlewares/jwt.middlewares";
+import { UploadModule } from "./upload/upload.module";
+import { ScheduleInfoEntity } from "./info/entities/schedule-Info.entity";
+import { ScheduleModule } from "@nestjs/schedule";
 
 @Module({
   imports: [
@@ -70,6 +73,7 @@ import { JWTMiddlewares } from "./middlewares/jwt.middlewares";
         ManageMentCategoryEntites,
         ManageMentCategoryEntity,
         DueDateEntity,
+        ScheduleInfoEntity,
       ],
       synchronize: true,
       logging: process.env.NODE_ENV !== "production",
@@ -82,10 +86,12 @@ import { JWTMiddlewares } from "./middlewares/jwt.middlewares";
       pass: process.env.MAIL_PASSWORD,
       host: process.env.MAIL_HOST,
     }),
+    ScheduleModule.forRoot(),
     AdminModule,
     InfoModule,
     CommonModule,
     ManageMentModule,
+    UploadModule,
   ],
   controllers: [AppController],
   providers: [AppService],

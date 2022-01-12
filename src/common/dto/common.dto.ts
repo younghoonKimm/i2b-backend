@@ -23,3 +23,7 @@ export class RadioInput {
   @Max(4)
   number: number;
 }
+
+export interface tokenInterface {
+  id: string;
+}

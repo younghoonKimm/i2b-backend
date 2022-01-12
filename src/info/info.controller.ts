@@ -26,11 +26,14 @@ export class InfoController {
     return this.infoService.getCategories();
   }
 
-  @Get()
+  @UseGuards(HasID)
+  @Get("/data")
   @ApiOperation({ summary: "유저 정보", description: "유저 정보" })
   @ApiBearerAuth()
-  getInfo(@Body() clientEmail: string) {
-    return this.infoService.getUser(clientEmail);
+  getInfo(@Body() @Token() token?: any) {
+    if (token) {
+      return this.infoService.getUser(token);
+    }
   }
 
   @UseGuards(HasID)
