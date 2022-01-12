@@ -59,6 +59,7 @@ export class InfoService {
         .createQueryBuilder("info_entity")
         .leftJoinAndSelect(`info_entity.clientInfo`, "clientInfo")
         .leftJoinAndSelect(`info_entity.baseInfo`, "baseInfo")
+        .where("info_entity.id = :id", { id })
         .getOne();
 
       if (exists) {
@@ -79,11 +80,10 @@ export class InfoService {
             [infoData.status]: infoStatusData,
           });
         }
-
         await queryRunner.commitTransaction();
       } else {
         await queryRunner.rollbackTransaction();
-        return { error: "오류" };
+        return { error: "토큰 오류" };
       }
     } catch (error) {
       await queryRunner.rollbackTransaction();
@@ -96,14 +96,16 @@ export class InfoService {
   async createInfo(infoData: InfoDto): Promise<ClientInfoOutput> {
     const queryRunner = this.connection.createQueryRunner();
     try {
-      const exists = await this.info.findOne({
-        clientEmail: infoData.clientEmail,
-      });
+      // const exists = await this.info.findOne({
+      //   clientEmail: infoData.clientEmail,
+      // });
 
-      if (exists) {
-        const token = this.jwtService.sign({ id: exists.id });
-        return { token, error: "존재하는 이메일" };
-      }
+      if (!infoData.clientInfo) return { error: "에러" };
+
+      // if (exists) {
+      //   const token = this.jwtService.sign({ id: exists.id });
+      //   return { token, error: "존재하는 이메일" };
+      // }
 
       const { clientInfo, password } = infoData;
 
@@ -120,13 +122,16 @@ export class InfoService {
         this.info.create({
           clientEmail: clientInfo.clientEmail,
           password,
+          status: StatusStep.clientInfo,
           clientInfo: crateClientInfo,
           // baseInfo: crateBaseInfo,
         }),
       );
       const token = this.jwtService.sign({ id: newInfoData.id });
 
-      await this.mailService.sendToClient();
+      if (password) {
+        // await this.mailService.sendToClient();
+      }
 
       return { token };
     } catch (error) {

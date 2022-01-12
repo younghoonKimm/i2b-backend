@@ -5,6 +5,7 @@ import { InfoDto } from "src/common/dto/info.dto";
 import { HasID } from "src/middlewares/hasid.middleware";
 import { Token } from "src/decorator/admin.decorator";
 import { ApiTags, ApiBearerAuth, ApiOperation } from "@nestjs/swagger";
+import { JwtService } from "src/jwt/jwt.service";
 
 @Controller("info")
 @ApiTags("Info")

@@ -24,9 +24,11 @@ export class HasID implements CanActivate {
 
     const decodedToken = this.validateToken(requsetToken);
 
-    if (decodedToken) {
+    if (requsetToken && decodedToken) {
       request.user = decodedToken;
+      return true;
+    } else {
+      return false;
     }
-    return true;
   }
 }
