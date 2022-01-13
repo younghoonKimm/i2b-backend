@@ -89,7 +89,7 @@ export class MangaeMentController {
   // }
 
   @UseGuards(AuthGuard)
-  @Post("/categories/:seqNo/Price")
+  @Post("/categories/:seqNo/price")
   @ApiBearerAuth("bearerAuth")
   @ApiOperation({ summary: "카테고리 세부 가격 수정", description: "" })
   async setPriceData(
