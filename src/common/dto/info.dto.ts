@@ -4,10 +4,11 @@ import { Column } from "typeorm";
 import { InfoEntity } from "../entities/info.entity";
 
 export class InfoDto extends PickType(InfoEntity, [
+  "status",
   "clientInfo",
   "baseInfo",
   "detailInfo",
-  "status",
+  "scheduleInfo",
 ]) {
   @ApiProperty({
     example: "dev.olivestonelab.com",
