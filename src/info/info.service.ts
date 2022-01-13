@@ -162,20 +162,22 @@ export class InfoService {
     // const compareDate = new Date()
     //   .setDate(new Date().getDate() + 7)
     //   .toISOString();
+    try {
+      const compareDate = new Date(
+        Date.now() - 7 * 24 * 60 * 60 * 1000,
+      ).toISOString();
 
-    const compareDate = new Date(
-      Date.now() - 7 * 24 * 60 * 60 * 1000,
-    ).toISOString();
+      await queryRunner.query(
+        `DELETE FROM info_entity
+          WHERE "updateAt" <= '${compareDate}'
+        `,
+      );
 
-    const cate = await queryRunner.query(
-      `SELECT * FROM info_entity
-         WHERE "updateAt" >= '${compareDate}'`,
-    );
-
-    console.log(cate);
-    return await queryRunner.query(
-      `DELETE FROM info_entity
-         WHERE "updateAt" >= '${compareDate}'`,
-    );
+      await queryRunner.commitTransaction();
+    } catch (e) {
+      await queryRunner.rollbackTransaction();
+    } finally {
+      await queryRunner.release();
+    }
   }
 }

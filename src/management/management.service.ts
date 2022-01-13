@@ -4,7 +4,6 @@ import { Repository, Connection } from "typeorm";
 import { v4 as uuidv4 } from "uuid";
 
 import {
-  ManageMentCategoryDto,
   ManagementParentOutput,
   ManageMentSetPriceInput,
   ManageMentSetPriceOutput,
@@ -49,7 +48,7 @@ const createEntity = async (arr, parent, entity, price) => {
 };
 
 //빈곳에 퍼센트 입력
-const setPrecent = (length) =>
+const setPercent = (length) =>
   new Array(length)
     .fill(defaultPercent)
     .map((value, index) => ({ ...value, month: index + 1 }));
@@ -142,6 +141,8 @@ export class ManagementService {
       await this.registerPriceData(dueDateValue);
     } catch {
       await queryRunner.rollbackTransaction();
+    } finally {
+      await queryRunner.release();
     }
   }
 
@@ -151,7 +152,7 @@ export class ManagementService {
       acc.push({
         month: cur,
         ...defaultPrice,
-        precent: setPrecent(cur),
+        percent: setPercent(cur),
       });
       return acc;
     }, []);
@@ -169,7 +170,7 @@ export class ManagementService {
     await queryRunner.startTransaction();
 
     try {
-      Promise.all(
+      await Promise.all(
         categories.map(async (category) => {
           for (let l = 0; l < category.children.length; l++) {
             let newPrice = [];
@@ -186,7 +187,7 @@ export class ManagementService {
                   {
                     month: array[m],
                     ...defaultPrice,
-                    precent: setPrecent(array[m]),
+                    percent: setPercent(array[m]),
                   },
                 ];
               }
@@ -203,6 +204,8 @@ export class ManagementService {
       await queryRunner.commitTransaction();
     } catch (e) {
       await queryRunner.rollbackTransaction();
+    } finally {
+      await queryRunner.release();
     }
   }
 
@@ -326,7 +329,7 @@ export class ManagementService {
       //    `,
       // );
 
-      Promise.all(
+      await Promise.all(
         data.children.map(async (children) => {
           let newPrice = [];
 
@@ -347,7 +350,7 @@ export class ManagementService {
                 {
                   month: dueDateValue[m],
                   ...defaultPrice,
-                  precent: setPrecent(dueDateValue[m]),
+                  percent: setPercent(dueDateValue[m]),
                 },
               ];
             }
@@ -361,6 +364,8 @@ export class ManagementService {
       await queryRunner.commitTransaction();
     } catch (e) {
       await queryRunner.rollbackTransaction();
+    } finally {
+      await queryRunner.release();
     }
   }
 }
