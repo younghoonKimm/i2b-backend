@@ -322,19 +322,12 @@ export class ManagementService {
         .getRepository(ManageMentCategoryEntites)
         .findOne({ seqNo }, { relations: ["children"] });
 
-      // const cate = await queryRunner.query(
-      //   `SELECT * FROM manage_ment_category_entites
-      //    WHERE "seqNo" = '${seqNo}'
-
-      //    `,
-      // );
-
       await Promise.all(
         data.children.map(async (children) => {
           let newPrice = [];
 
           const beforeData = category.children.find(
-            (child) => child.seqNo === child.seqNo,
+            (child) => children.seqNo === child.seqNo,
           );
 
           for (let m = 0; m < dueDateValue.length; m++) {
@@ -355,6 +348,10 @@ export class ManagementService {
               ];
             }
           }
+          console.log({
+            ...beforeData,
+            price: newPrice,
+          });
           await queryRunner.manager.save(ManageMentCategoryEntity, {
             ...beforeData,
             price: newPrice,

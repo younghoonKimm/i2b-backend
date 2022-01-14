@@ -13,8 +13,15 @@ import { BaseInfoEntity } from "./entities/base-info.entity";
 import { MailService } from "src/mail/mail.service";
 import { ManageMentCategoryEntites } from "src/management/entities/category.entity";
 import { tokenInterface } from "src/common/dto/common.dto";
+import { DetailInfoEntity } from "./entities/detail-info.entity";
+import { ScheduleInfoEntity } from "./entities/schedule-Info.entity";
 
-const infoArray = { clientInfo: ClientInfoEntity, baseInfo: BaseInfoEntity };
+const infoArray = {
+  clientInfo: ClientInfoEntity,
+  baseInfo: BaseInfoEntity,
+  detailInfo: DetailInfoEntity,
+  scheduleInfo: ScheduleInfoEntity,
+};
 
 @Injectable()
 export class InfoService {
@@ -28,14 +35,13 @@ export class InfoService {
     @InjectRepository(ManageMentCategoryEntites)
     private readonly manageMentCategoryEntity: Repository<ManageMentCategoryEntites>,
     private readonly jwtService: JwtService,
-    private schedulerRegistry: SchedulerRegistry,
     private mailService: MailService,
   ) {}
 
   async getUser({ id }: tokenInterface) {
     try {
       const user = await this.info.findOne(id, {
-        relations: ["clientInfo", "baseInfo", "detailInfo", "scheduleinfo"],
+        relations: ["clientInfo", "baseInfo", "detailInfo", "scheduleInfo"],
       });
       return user;
     } catch (error) {
@@ -60,21 +66,37 @@ export class InfoService {
     await queryRunner.connect();
     await queryRunner.startTransaction();
 
+    const { status } = infoData;
+    const isEndStatus = status === StatusStep.end;
+
     try {
       const exists = await this.info
         .createQueryBuilder("info_entity")
         .leftJoinAndSelect(`info_entity.clientInfo`, "clientInfo")
         .leftJoinAndSelect(`info_entity.baseInfo`, "baseInfo")
+        .leftJoinAndSelect(`info_entity.detailInfo`, "detailInfo")
+        .leftJoinAndSelect(`info_entity.scheduleInfo`, "scheduleInfo")
         .where("info_entity.id = :id", { id })
         .getOne();
 
       if (exists) {
+        if (isEndStatus) {
+          const { clientInfo, baseInfo, detailInfo, scheduleInfo } = exists;
+          if (clientInfo && baseInfo && detailInfo && scheduleInfo) {
+            await queryRunner.manager.save(InfoEntity, {
+              ...exists,
+              status: StatusStep.end,
+            });
+          } else {
+            return { error: "항목 없음" };
+          }
+        }
         if (exists[infoData.status]) {
           await queryRunner.manager.save(infoArray[infoData.status], {
             ...exists[infoData.status],
             ...infoData[infoData.status],
           });
-        } else {
+        } else if (!isEndStatus) {
           const infoStatusData = await queryRunner.manager.save(
             infoArray[infoData.status],
             infoData[infoData.status],
@@ -151,7 +173,7 @@ export class InfoService {
   // @Cron("0 1 * * *", {
   //   name: "deleteNotComplete",
   // })
-  @Cron("10 * * * * *", {
+  @Cron("30 * * * * *", {
     name: "deleteNotComplete",
   })
   async deleteNotComplete() {
@@ -159,9 +181,6 @@ export class InfoService {
     await queryRunner.connect();
     await queryRunner.startTransaction();
 
-    // const compareDate = new Date()
-    //   .setDate(new Date().getDate() + 7)
-    //   .toISOString();
     try {
       const compareDate = new Date(
         Date.now() - 7 * 24 * 60 * 60 * 1000,
@@ -170,6 +189,7 @@ export class InfoService {
       await queryRunner.query(
         `DELETE FROM info_entity
           WHERE "updateAt" <= '${compareDate}'
+          AND "status" != '${StatusStep.end}'
         `,
       );
 
