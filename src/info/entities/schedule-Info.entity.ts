@@ -1,11 +1,12 @@
-import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, OneToOne } from "typeorm";
 import { IsDate, IsNumber, Min, Max } from "class-validator";
 import { ApiProperty } from "@nestjs/swagger";
+import { InfoEntity } from "src/common/entities/info.entity";
 
 @Entity()
 export class ScheduleInfoEntity {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn("uuid")
+  id: string;
 
   @Column()
   @IsNumber()
@@ -39,4 +40,9 @@ export class ScheduleInfoEntity {
     example: 1000000,
   })
   budget: number;
+
+  @OneToOne(() => InfoEntity, (infoEntity) => infoEntity.scheduleInfo, {
+    onDelete: "CASCADE",
+  })
+  info: InfoEntity;
 }

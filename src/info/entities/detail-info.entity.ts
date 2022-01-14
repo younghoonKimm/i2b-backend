@@ -4,9 +4,9 @@ import { InfoEntity } from "src/common/entities/info.entity";
 import { ApiProperty } from "@nestjs/swagger";
 
 @Entity()
-export class DetailInfo {
-  @PrimaryGeneratedColumn()
-  id: number;
+export class DetailInfoEntity {
+  @PrimaryGeneratedColumn("uuid")
+  id: string;
 
   @Column()
   @IsString()

@@ -16,7 +16,7 @@ import { CommonModule } from "./common/common.module";
 import { InfoEntity } from "./common/entities/info.entity";
 import { ClientInfoEntity } from "./info/entities/client-info.entity";
 import { BaseInfoEntity } from "./info/entities/base-info.entity";
-import { DetailInfo } from "./info/entities/detail-info.entity";
+import { DetailInfoEntity } from "./info/entities/detail-info.entity";
 import { DueDateEntity } from "./management/entities/dueDate.entity";
 
 import { JwtModule } from "./jwt/jwt.module";
@@ -32,6 +32,7 @@ import { JWTMiddlewares } from "./middlewares/jwt.middlewares";
 import { UploadModule } from "./upload/upload.module";
 import { ScheduleInfoEntity } from "./info/entities/schedule-Info.entity";
 import { ScheduleModule } from "@nestjs/schedule";
+import { DashboardModule } from "./dashboard/dashboard.module";
 
 @Module({
   imports: [
@@ -68,7 +69,7 @@ import { ScheduleModule } from "@nestjs/schedule";
         InfoEntity,
         ClientInfoEntity,
         BaseInfoEntity,
-        DetailInfo,
+        DetailInfoEntity,
         AdminInfoEntity,
         ManageMentCategoryEntites,
         ManageMentCategoryEntity,
@@ -92,6 +93,7 @@ import { ScheduleModule } from "@nestjs/schedule";
     CommonModule,
     ManageMentModule,
     UploadModule,
+    DashboardModule,
   ],
   controllers: [AppController],
   providers: [AppService],

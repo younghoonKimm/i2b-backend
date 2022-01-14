@@ -1,12 +1,12 @@
 import { Entity, Column, BeforeInsert, OneToOne, JoinColumn } from "typeorm";
 import { CommonEntitiy } from "src/common/entities/common.entity";
-import { IsString, IsEnum, Length, IsEmail } from "class-validator";
+import { IsString, IsEnum, Length, IsEmail, IsBoolean } from "class-validator";
 import * as bcrypt from "bcrypt";
 
 import { InternalServerErrorException } from "@nestjs/common";
 import { ClientInfoEntity } from "src/info/entities/client-info.entity";
 import { BaseInfoEntity } from "src/info/entities/base-info.entity";
-import { DetailInfo } from "src/info/entities/detail-info.entity";
+import { DetailInfoEntity } from "src/info/entities/detail-info.entity";
 import { ApiProperty } from "@nestjs/swagger";
 import { ScheduleInfoEntity } from "src/info/entities/schedule-Info.entity";
 
@@ -36,6 +36,13 @@ export class InfoEntity extends CommonEntitiy {
   })
   password?: string;
 
+  @Column({ default: false })
+  @IsBoolean()
+  @ApiProperty({
+    example: false,
+  })
+  isConfidential: boolean;
+
   @Column({ type: "enum", enum: StatusStep, default: StatusStep.clientInfo })
   @IsEnum(StatusStep)
   @ApiProperty({
@@ -59,15 +66,15 @@ export class InfoEntity extends CommonEntitiy {
   @ApiProperty()
   baseInfo: BaseInfoEntity;
 
-  @OneToOne(() => DetailInfo, (baseInfo) => baseInfo.info, {
+  @OneToOne(() => DetailInfoEntity, (detailInfo) => detailInfo.info, {
     nullable: true,
     onDelete: "SET NULL",
   })
   @JoinColumn()
   @ApiProperty()
-  detailInfo: DetailInfo;
+  detailInfo: DetailInfoEntity;
 
-  @OneToOne(() => DetailInfo, (baseInfo) => baseInfo.info, {
+  @OneToOne(() => ScheduleInfoEntity, (scheduleInfo) => scheduleInfo.info, {
     nullable: true,
     onDelete: "SET NULL",
   })
