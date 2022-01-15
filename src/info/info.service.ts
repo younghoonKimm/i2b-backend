@@ -30,8 +30,6 @@ export class InfoService {
     @InjectRepository(InfoEntity) private readonly info: Repository<InfoEntity>,
     @InjectRepository(ClientInfoEntity)
     private readonly clientInfo: Repository<ClientInfoEntity>,
-    @InjectRepository(BaseInfoEntity)
-    private readonly baseInfo: Repository<BaseInfoEntity>,
     @InjectRepository(ManageMentCategoryEntites)
     private readonly manageMentCategoryEntity: Repository<ManageMentCategoryEntites>,
     private readonly jwtService: JwtService,
@@ -170,10 +168,7 @@ export class InfoService {
     }
   }
 
-  // @Cron("0 1 * * *", {
-  //   name: "deleteNotComplete",
-  // })
-  @Cron("30 * * * * *", {
+  @Cron("0 1 * * *", {
     name: "deleteNotComplete",
   })
   async deleteNotComplete() {
