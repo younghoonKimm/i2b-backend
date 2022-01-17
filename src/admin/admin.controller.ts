@@ -16,6 +16,7 @@ import {
   ApiBody,
   ApiBearerAuth,
 } from "@nestjs/swagger";
+import { AdminAllUserOutput } from "./dto/admin-all-user.dto";
 
 @Controller("admin")
 @ApiTags("Admin")
@@ -72,5 +73,14 @@ export class AdminController {
   })
   getUserInfo(@Token() token: any): Promise<AdminMeOutPutDto> {
     return this.adminService.getUserInfo(token);
+  }
+
+  @UseGuards(AuthGuard)
+  @Get("/users")
+  @ApiBearerAuth("bearerAuth")
+  // @ApiOperation()
+  // @ApiCreatedResponse()
+  getAllUserInfo(@Token() token: any): Promise<AdminAllUserOutput> {
+    return this.adminService.getAllAdminUSer(token);
   }
 }

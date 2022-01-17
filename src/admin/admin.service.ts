@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
-import { AdminInfoEntity } from "./entities/admin-info.entity";
+import { Repository, Connection } from "typeorm";
+import { AdminInfoEntity, AdminRole } from "./entities/admin-info.entity";
 import {
   AdminCreateInputDto,
   AdminMeOutPutDto,
@@ -10,10 +10,12 @@ import {
 import { AdminLoginInput, AdminLoginOutput } from "./dto/admin-login.dto";
 import { AdminEditInput, AdminEditOutput } from "./dto/admin-edit.dto";
 import { JwtService } from "src/jwt/jwt.service";
+import { AdminAllUserOutput } from "./dto/admin-all-user.dto";
 
 @Injectable()
 export class AdminService {
   constructor(
+    private connection: Connection,
     @InjectRepository(AdminInfoEntity)
     private readonly adminInfo: Repository<AdminInfoEntity>,
     private readonly jwtService: JwtService,
@@ -82,13 +84,41 @@ export class AdminService {
     }
   }
 
+  async getAllAdminUSer(token: any): Promise<AdminAllUserOutput> {
+    try {
+      const users = await this.adminInfo
+        .createQueryBuilder("admin_info_entity")
+        .where(
+          "admin_info_entity.id != :id AND admin_info_entity.role = :role",
+          { id: token.id, role: AdminRole.Watch },
+        )
+        .select([
+          "admin_info_entity.id",
+          "admin_info_entity.adminEmail",
+          "admin_info_entity.adminName",
+          "admin_info_entity.role",
+          "admin_info_entity.updateAt",
+          "admin_info_entity.adminId",
+        ])
+        .getMany();
+      if (users) {
+        return { users };
+      } else {
+        return { error: "사용자가 없습니다." };
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
   async getUserInfo(token: any): Promise<AdminMeOutPutDto> {
     const user = await this.adminInfo.findOne({
       id: token.id,
     });
+
     if (user) {
-      const { adminId, adminName, adminEmail } = user;
-      return { adminId, adminName, adminEmail };
+      const { adminId, adminName, adminEmail, role } = user;
+      return { adminId, adminName, adminEmail, role };
     } else {
       return { error: "notfound" };
     }
