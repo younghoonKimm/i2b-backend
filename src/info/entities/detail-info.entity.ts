@@ -33,7 +33,7 @@ export class DetailInfoEntity {
   @Column({ nullable: true })
   @IsNumber()
   @Min(0)
-  @Max(4)
+  @Max(2)
   @ApiProperty({
     example: 0,
   })
