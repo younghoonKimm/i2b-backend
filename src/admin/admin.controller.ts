@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Put, UseGuards, Get } from "@nestjs/common";
+import { Controller, Post, Body, UseGuards, Get } from "@nestjs/common";
 import { AdminService } from "./admin.service";
 import {
   AdminCreateInputDto,
@@ -62,7 +62,7 @@ export class AdminController {
   ): Promise<AdminEditOutput> {
     return this.adminService.editAdminUser(token, adminEditInput);
   }
-  // @ApiHeader({ name: "Bearer" })
+
   @UseGuards(AuthGuard)
   @Get("/me")
   @ApiBearerAuth("bearerAuth")
@@ -82,5 +82,12 @@ export class AdminController {
   // @ApiCreatedResponse()
   getAllUserInfo(@Token() token: any): Promise<AdminAllUserOutput> {
     return this.adminService.getAllAdminUSer(token);
+  }
+
+  @UseGuards(AuthGuard)
+  @Post("/user/delete")
+  @ApiBearerAuth("bearerAuth")
+  getDeleteUser(@Token() token: any, @Body() id: any) {
+    return this.adminService.deleteAdminUser(token, id);
   }
 }

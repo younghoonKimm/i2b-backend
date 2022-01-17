@@ -1,7 +1,5 @@
-import { Column } from "typeorm";
-import { IsEmail, IsString, IsArray } from "class-validator";
-import { ApiProperty, PickType, PartialType } from "@nestjs/swagger";
-import { CommonOutPut } from "src/common/dto/common.dto";
+import { IsString, IsArray } from "class-validator";
+import { PickType, PartialType } from "@nestjs/swagger";
 import { AdminInfoEntity } from "../entities/admin-info.entity";
 
 export class AllUserOutput extends PickType(PartialType(AdminInfoEntity), [
@@ -10,6 +8,7 @@ export class AllUserOutput extends PickType(PartialType(AdminInfoEntity), [
   "updateAt",
   "adminName",
   "role",
+  "id",
 ]) {}
 
 export class AdminAllUserOutput {
