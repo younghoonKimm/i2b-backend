@@ -2,7 +2,7 @@ import { Column } from "typeorm";
 import { IsString, Length, IsEmail, IsEnum } from "class-validator";
 import { ApiProperty, PickType, PartialType } from "@nestjs/swagger";
 import { CommonOutPut } from "src/common/dto/common.dto";
-import { AdminRole, AdminInfoEntity } from "../entities/admin-info.entity";
+import { AdminInfoEntity } from "../entities/admin-info.entity";
 
 export class AdminCreateInputDto extends PickType(AdminInfoEntity, [
   "adminId",

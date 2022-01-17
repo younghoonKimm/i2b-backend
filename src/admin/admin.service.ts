@@ -20,6 +20,18 @@ export class AdminService {
     private readonly adminInfo: Repository<AdminInfoEntity>,
     private readonly jwtService: JwtService,
   ) {}
+
+  async checkUser(adminId) {
+    const user = await this.adminInfo.findOne({
+      adminId,
+    });
+
+    if (user) {
+      return true;
+    } else {
+      return false;
+    }
+  }
   async createAdminUser(
     userData: AdminCreateInputDto,
   ): Promise<AdminCreateOutputDto> {
@@ -121,6 +133,40 @@ export class AdminService {
       return { adminId, adminName, adminEmail, role };
     } else {
       return { error: "notfound" };
+    }
+  }
+
+  async deleteAdminUser(token: any, id: any) {
+    const queryRunner = this.connection.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
+    const user = await queryRunner.manager.findOne(AdminInfoEntity, {
+      id: token.id,
+    });
+    try {
+      if (user) {
+        if (user.role === AdminRole.System) {
+          await queryRunner.manager.delete(AdminInfoEntity, { id });
+          // await this.adminInfo
+          //   .createQueryBuilder("admin_info_entity")
+          //   .delete()
+          //   .where("id = :id", { id });
+          // await this.adminInfo.delete({
+          //   id: body.id,
+          // });
+        } else {
+          return {
+            error: "권한이 없습니다",
+          };
+        }
+      }
+      await queryRunner.commitTransaction();
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      return { error };
+    } finally {
+      queryRunner.release();
     }
   }
 }
