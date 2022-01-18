@@ -222,7 +222,7 @@ export class ManagementService {
       { seqNo },
       { relations: ["children"] },
     );
-
+    console.log(childData);
     if (childData) return childData.children;
   }
 
