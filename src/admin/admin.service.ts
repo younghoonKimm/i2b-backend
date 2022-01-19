@@ -26,12 +26,9 @@ export class AdminService {
       adminId,
     });
 
-    if (user) {
-      return true;
-    } else {
-      return false;
-    }
+    user ? true : false;
   }
+
   async createAdminUser(
     userData: AdminCreateInputDto,
   ): Promise<AdminCreateOutputDto> {

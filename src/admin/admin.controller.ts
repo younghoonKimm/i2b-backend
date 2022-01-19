@@ -90,4 +90,11 @@ export class AdminController {
   getDeleteUser(@Token() token: any, @Body() id: any) {
     return this.adminService.deleteAdminUser(token, id);
   }
+
+  @UseGuards(AuthGuard)
+  @Post("/user/check")
+  @ApiBearerAuth("bearerAuth")
+  getUserCheck(@Body() adminId: string) {
+    return this.adminService.checkUser(adminId);
+  }
 }

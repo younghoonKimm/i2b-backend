@@ -222,7 +222,6 @@ export class ManagementService {
       { seqNo },
       { relations: ["children"] },
     );
-    console.log(childData);
     if (childData) return childData.children;
   }
 
@@ -348,10 +347,6 @@ export class ManagementService {
               ];
             }
           }
-          console.log({
-            ...beforeData,
-            price: newPrice,
-          });
           await queryRunner.manager.save(ManageMentCategoryEntity, {
             ...beforeData,
             price: newPrice,
