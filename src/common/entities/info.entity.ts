@@ -9,6 +9,7 @@ import { BaseInfoEntity } from "src/info/entities/base-info.entity";
 import { DetailInfoEntity } from "src/info/entities/detail-info.entity";
 import { ApiProperty } from "@nestjs/swagger";
 import { ScheduleInfoEntity } from "src/info/entities/schedule-Info.entity";
+import { ReviewEntity } from "src/info/entities/review.entitiy";
 
 export enum StatusStep {
   clientInfo = "clientInfo",
@@ -64,7 +65,7 @@ export class InfoEntity extends CommonEntitiy {
   })
   @JoinColumn()
   @ApiProperty()
-  baseInfo: BaseInfoEntity;
+  baseInfo?: BaseInfoEntity;
 
   @OneToOne(() => DetailInfoEntity, (detailInfo) => detailInfo.info, {
     nullable: true,
@@ -72,7 +73,7 @@ export class InfoEntity extends CommonEntitiy {
   })
   @JoinColumn()
   @ApiProperty()
-  detailInfo: DetailInfoEntity;
+  detailInfo?: DetailInfoEntity;
 
   @OneToOne(() => ScheduleInfoEntity, (scheduleInfo) => scheduleInfo.info, {
     nullable: true,
@@ -80,7 +81,14 @@ export class InfoEntity extends CommonEntitiy {
   })
   @JoinColumn()
   @ApiProperty()
-  scheduleInfo: ScheduleInfoEntity;
+  scheduleInfo?: ScheduleInfoEntity;
+
+  @OneToOne(() => ReviewEntity, (review) => review.info, {
+    nullable: true,
+    onDelete: "SET NULL",
+  })
+  @JoinColumn()
+  review?: ReviewEntity;
 
   @BeforeInsert()
   async hashPassword(): Promise<void> {

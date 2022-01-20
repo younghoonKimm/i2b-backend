@@ -30,16 +30,24 @@ export class AdminService {
   }
 
   async createAdminUser(
+    token: any,
     userData: AdminCreateInputDto,
   ): Promise<AdminCreateOutputDto> {
     const { adminId } = userData;
     try {
-      const isAdmin = await this.adminInfo.findOne({ adminId });
-      if (isAdmin) {
-        return { success: false, error: "계정 중복" };
+      const user = await this.adminInfo.findOne({
+        id: token.id,
+      });
+      if (user.role === AdminRole.System) {
+        const isAdmin = await this.adminInfo.findOne({ adminId });
+        if (isAdmin) {
+          return { success: false, error: "계정 중복" };
+        } else {
+          await this.adminInfo.save(this.adminInfo.create(userData));
+          return { success: true };
+        }
       } else {
-        await this.adminInfo.save(this.adminInfo.create(userData));
-        return { success: true };
+        return { error: "권한 없음" };
       }
     } catch (error) {
       console.log(error);
