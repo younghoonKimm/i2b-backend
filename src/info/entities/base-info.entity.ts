@@ -36,7 +36,7 @@ export class BaseInfoEntity {
   // @Column("text", { array: true })
   // projectRequestLists: string[];
 
-  @OneToOne(() => InfoEntity, (infoEntity) => infoEntity.clientInfo, {
+  @OneToOne(() => InfoEntity, (infoEntity) => infoEntity.baseInfo, {
     onDelete: "CASCADE",
   })
   info: InfoEntity;
