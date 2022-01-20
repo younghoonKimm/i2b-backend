@@ -8,6 +8,7 @@ import { BaseInfoEntity } from "./entities/base-info.entity";
 import { DetailInfoEntity } from "./entities/detail-info.entity";
 import { ManageMentCategoryEntites } from "src/management/entities/category.entity";
 import { ScheduleInfoEntity } from "./entities/schedule-Info.entity";
+import { ReviewEntity } from "./entities/review.entitiy";
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { ScheduleInfoEntity } from "./entities/schedule-Info.entity";
       DetailInfoEntity,
       ScheduleInfoEntity,
       ManageMentCategoryEntites,
+      ReviewEntity,
     ]),
   ],
   controllers: [InfoController],

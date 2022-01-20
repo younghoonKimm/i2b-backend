@@ -33,6 +33,7 @@ import { UploadModule } from "./upload/upload.module";
 import { ScheduleInfoEntity } from "./info/entities/schedule-Info.entity";
 import { ScheduleModule } from "@nestjs/schedule";
 import { DashboardModule } from "./dashboard/dashboard.module";
+import { ReviewEntity } from "./info/entities/review.entitiy";
 
 @Module({
   imports: [
@@ -71,6 +72,7 @@ import { DashboardModule } from "./dashboard/dashboard.module";
         BaseInfoEntity,
         DetailInfoEntity,
         AdminInfoEntity,
+        ReviewEntity,
         ManageMentCategoryEntites,
         ManageMentCategoryEntity,
         DueDateEntity,
