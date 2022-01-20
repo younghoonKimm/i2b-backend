@@ -153,13 +153,6 @@ export class AdminService {
       if (user) {
         if (user.role === AdminRole.System) {
           await queryRunner.manager.delete(AdminInfoEntity, { id });
-          // await this.adminInfo
-          //   .createQueryBuilder("admin_info_entity")
-          //   .delete()
-          //   .where("id = :id", { id });
-          // await this.adminInfo.delete({
-          //   id: body.id,
-          // });
         } else {
           return {
             error: "권한이 없습니다",
