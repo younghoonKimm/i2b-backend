@@ -6,13 +6,12 @@ import { Connection, Repository } from "typeorm";
 import { InfoEntity, StatusStep } from "../common/entities/info.entity";
 import { ClientInfoEntity } from "./entities/client-info.entity";
 import { ClientInfoOutput } from "./dto/client-info.dto";
-import { ReviewInputDto } from "./dto/review.dto";
 import { InfoDto } from "src/common/dto/info.dto";
 import { JwtService } from "src/jwt/jwt.service";
 import { BaseInfoEntity } from "./entities/base-info.entity";
 import { MailService } from "src/mail/mail.service";
 import { ManageMentCategoryEntites } from "src/management/entities/category.entity";
-import { tokenInterface, CommonOutPut } from "src/common/dto/common.dto";
+import { tokenInterface } from "src/common/dto/common.dto";
 import { DetailInfoEntity } from "./entities/detail-info.entity";
 import { ScheduleInfoEntity } from "./entities/schedule-Info.entity";
 import { ReviewEntity } from "./entities/review.entitiy";
@@ -176,29 +175,6 @@ export class InfoService {
       queryRunner.release();
     }
   }
-
-  // async createReview(
-  //   reviewData: ReviewInputDto,
-  //   id?: string,
-  // ): Promise<CommonOutPut> {
-  //   const user = await this.info.findOne({ id });
-  //   try {
-  //     if (user) {
-  //       const review = await this.reviewEntity.save(
-  //         this.reviewEntity.create(reviewData),
-  //       );
-  //       user.review = review;
-  //       await this.info.save(user);
-  //       return { success: true };
-  //     } else {
-  //       return {
-  //         error: "유저 정보 없음",
-  //       };
-  //     }
-  //   } catch (error) {
-  //     return { error };
-  //   }
-  // }
 
   @Cron("0 1 * * *", {
     name: "deleteNotComplete",
