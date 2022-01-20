@@ -83,11 +83,11 @@ export class InfoEntity extends CommonEntitiy {
   @ApiProperty()
   scheduleInfo?: ScheduleInfoEntity;
 
+  @JoinColumn()
   @OneToOne(() => ReviewEntity, (review) => review.info, {
     nullable: true,
     onDelete: "SET NULL",
   })
-  @JoinColumn()
   review?: ReviewEntity;
 
   @BeforeInsert()

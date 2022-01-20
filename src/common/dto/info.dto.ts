@@ -9,6 +9,7 @@ export class InfoDto extends PickType(InfoEntity, [
   "baseInfo",
   "detailInfo",
   "scheduleInfo",
+  "review",
 ]) {
   @ApiProperty({
     example: "dev.olivestonelab.com",

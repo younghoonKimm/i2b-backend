@@ -39,7 +39,7 @@ export class DetailInfoEntity {
   })
   projectDispatch: number;
 
-  @OneToOne(() => InfoEntity, (infoEntity) => infoEntity.clientInfo, {
+  @OneToOne(() => InfoEntity, (infoEntity) => infoEntity.detailInfo, {
     onDelete: "CASCADE",
   })
   info: InfoEntity;

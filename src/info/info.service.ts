@@ -1,20 +1,21 @@
 import { Injectable } from "@nestjs/common";
-
 import { InjectRepository } from "@nestjs/typeorm";
-import { Cron, SchedulerRegistry } from "@nestjs/schedule";
+import { Cron } from "@nestjs/schedule";
 import { Connection, Repository } from "typeorm";
 
 import { InfoEntity, StatusStep } from "../common/entities/info.entity";
 import { ClientInfoEntity } from "./entities/client-info.entity";
 import { ClientInfoOutput } from "./dto/client-info.dto";
+import { ReviewInputDto } from "./dto/review.dto";
 import { InfoDto } from "src/common/dto/info.dto";
 import { JwtService } from "src/jwt/jwt.service";
 import { BaseInfoEntity } from "./entities/base-info.entity";
 import { MailService } from "src/mail/mail.service";
 import { ManageMentCategoryEntites } from "src/management/entities/category.entity";
-import { tokenInterface } from "src/common/dto/common.dto";
+import { tokenInterface, CommonOutPut } from "src/common/dto/common.dto";
 import { DetailInfoEntity } from "./entities/detail-info.entity";
 import { ScheduleInfoEntity } from "./entities/schedule-Info.entity";
+import { ReviewEntity } from "./entities/review.entitiy";
 
 const infoArray = {
   clientInfo: ClientInfoEntity,
@@ -32,6 +33,8 @@ export class InfoService {
     private readonly clientInfo: Repository<ClientInfoEntity>,
     @InjectRepository(ManageMentCategoryEntites)
     private readonly manageMentCategoryEntity: Repository<ManageMentCategoryEntites>,
+    @InjectRepository(ReviewEntity)
+    private readonly reviewEntity: Repository<ReviewEntity>,
     private readonly jwtService: JwtService,
     private mailService: MailService,
   ) {}
@@ -74,16 +77,23 @@ export class InfoService {
         .leftJoinAndSelect(`info_entity.baseInfo`, "baseInfo")
         .leftJoinAndSelect(`info_entity.detailInfo`, "detailInfo")
         .leftJoinAndSelect(`info_entity.scheduleInfo`, "scheduleInfo")
+        .leftJoinAndSelect(`info_entity.review`, "review")
         .where("info_entity.id = :id", { id })
         .getOne();
 
       if (exists) {
         if (isEndStatus) {
-          const { clientInfo, baseInfo, detailInfo, scheduleInfo } = exists;
+          const { clientInfo, baseInfo, detailInfo, scheduleInfo, review } =
+            exists;
           if (clientInfo && baseInfo && detailInfo && scheduleInfo) {
+            const newReview = await queryRunner.manager.save(ReviewEntity, {
+              ...review,
+              ...infoData.review,
+            });
             await queryRunner.manager.save(InfoEntity, {
               ...exists,
               status: StatusStep.end,
+              review: newReview,
             });
           } else {
             return { error: "항목 없음" };
@@ -99,7 +109,6 @@ export class InfoService {
             infoArray[infoData.status],
             infoData[infoData.status],
           );
-
           await queryRunner.manager.save(InfoEntity, {
             ...exists,
             status: StatusStep[infoData.status],
@@ -167,6 +176,29 @@ export class InfoService {
       queryRunner.release();
     }
   }
+
+  // async createReview(
+  //   reviewData: ReviewInputDto,
+  //   id?: string,
+  // ): Promise<CommonOutPut> {
+  //   const user = await this.info.findOne({ id });
+  //   try {
+  //     if (user) {
+  //       const review = await this.reviewEntity.save(
+  //         this.reviewEntity.create(reviewData),
+  //       );
+  //       user.review = review;
+  //       await this.info.save(user);
+  //       return { success: true };
+  //     } else {
+  //       return {
+  //         error: "유저 정보 없음",
+  //       };
+  //     }
+  //   } catch (error) {
+  //     return { error };
+  //   }
+  // }
 
   @Cron("0 1 * * *", {
     name: "deleteNotComplete",
