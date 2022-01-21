@@ -30,10 +30,6 @@ class ManageMentSetDataInputChildrenDto extends OmitType(
   ["price"],
 ) {}
 
-// export class ManageMentSetDataInput extends PickType(ManageMentCategoryDto, [
-//   "children",
-// ] as const) { }
-
 export class ManageMentSetDataInput {
   @PrimaryGeneratedColumn("uuid")
   seqNo: string;
