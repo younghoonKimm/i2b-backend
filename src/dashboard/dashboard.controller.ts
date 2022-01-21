@@ -1,4 +1,4 @@
-import { Controller, Get, UseGuards, Body } from "@nestjs/common";
+import { Controller, Get, UseGuards, Body, Param } from "@nestjs/common";
 import { ApiTags } from "@nestjs/swagger";
 import { DashBoardService } from "./dashboard.service";
 import { AuthGuard } from "src/middlewares/auth.middleware";
@@ -25,8 +25,10 @@ export class DashboardController {
   }
 
   @UseGuards(AuthGuard)
-  @Get("/review")
-  async getReviewData(): Promise<AllReviewOutput> {
-    return this.dashboardService.allReviewData();
+  @Get("/review/:page")
+  async getReviewData(
+    @Param() { page }: { page: number },
+  ): Promise<AllReviewOutput> {
+    return this.dashboardService.allReviewData(page);
   }
 }
