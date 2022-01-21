@@ -1,7 +1,6 @@
 import { Entity, Column, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 import { IsString, IsNumber, Length, IsArray, Min, Max } from "class-validator";
 import { InfoEntity } from "src/common/entities/info.entity";
-import { required } from "joi";
 import { ApiProperty } from "@nestjs/swagger";
 import { RadioInput } from "src/common/dto/common.dto";
 

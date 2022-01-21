@@ -1,4 +1,11 @@
-import { Entity, Column, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import {
+  Entity,
+  Column,
+  OneToOne,
+  PrimaryGeneratedColumn,
+  CreateDateColumn,
+  UpdateDateColumn,
+} from "typeorm";
 import { IsString, IsNumber, Min, Max } from "class-validator";
 import { InfoEntity } from "src/common/entities/info.entity";
 import { ApiProperty } from "@nestjs/swagger";
@@ -7,6 +14,12 @@ import { ApiProperty } from "@nestjs/swagger";
 export class ReviewEntity {
   @PrimaryGeneratedColumn("uuid")
   id: string;
+
+  @CreateDateColumn()
+  createAt: Date;
+
+  @UpdateDateColumn()
+  updateAt: Date;
 
   @Column()
   @IsNumber()

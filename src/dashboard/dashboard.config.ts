@@ -14,6 +14,15 @@ export const getInfoDataSelected = [
   "detailInfo.projectDispatch",
 ];
 
+export const getReviewInfoData = [
+  "info_entity.id",
+  "clientInfo.clientName",
+  "clientInfo.companyName",
+  "review.updateAt",
+  "review.record",
+  "review.review",
+];
+
 // "clientInfo.clientName",
 // "clientInfo.companyName",
 // "review.record",

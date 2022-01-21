@@ -4,7 +4,11 @@ import { InjectRepository } from "@nestjs/typeorm";
 
 import { InfoEntity, StatusStep } from "src/common/entities/info.entity";
 import { toISODate } from "src/utils/date";
-import { getSearchDataSelected, getInfoDataSelected } from "./dashboard.config";
+import {
+  getSearchDataSelected,
+  getInfoDataSelected,
+  getReviewInfoData,
+} from "./dashboard.config";
 import { ReviewEntity } from "src/info/entities/review.entitiy";
 import { EndInfoOutput, AllSearchOutputData } from "./dto/info-end.dto";
 import { AllReviewOutput } from "./dto/review-dto";
@@ -42,14 +46,27 @@ export class DashBoardService {
     }
   }
 
-  async allReviewData(): Promise<AllReviewOutput> {
+  async allReviewData(page: number): Promise<AllReviewOutput> {
     try {
       const reviewData = await this.reviewEntity
         .createQueryBuilder("review_entity")
-        .select(["review_entity.record", "review_entity.review"])
+        .select(["review_entity.record"])
         .getMany();
 
-      return { reviewData };
+      const [endReviewDatas, endReviewDatasTotal] = await this.info
+        .createQueryBuilder("info_entity")
+        .leftJoin(`info_entity.clientInfo`, "clientInfo")
+        .leftJoin(`info_entity.review`, "review")
+        .select([...getReviewInfoData])
+        .skip((page - 1) * 5)
+        .take(5)
+        .getManyAndCount();
+
+      return {
+        reviewData,
+        infoData: endReviewDatas,
+        totalPages: Math.ceil(endReviewDatasTotal / 10),
+      };
     } catch (error) {
       return { error };
     }
