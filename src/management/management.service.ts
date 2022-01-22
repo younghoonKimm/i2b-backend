@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Repository, Connection } from "typeorm";
+import { Repository, Connection, In } from "typeorm";
 import { v4 as uuidv4 } from "uuid";
 
 import {
@@ -106,6 +106,26 @@ export class ManagementService {
             });
           }
         }
+
+        // const values = [];
+
+        // for (let i = 0; i < dueDates.length; i++) {
+        //   const dueDate = dueDates[i].projDueDateMonth;
+        //   const isValue = array.find((value) => value === dueDate);
+        //   if (isValue) {
+        //     continue;
+        //   } else {
+        //     values.push(dueDates);
+        //   }
+        // }
+
+        // const deleteList = await this.dueDateEntity.find({
+        //   projDueDateMonth: In(values),
+        // });
+
+        // if (!deleteList[0]) {
+        //   this.dueDateEntity.delete(deleteList.map((a) => a.projDueDateSeqNo));
+        // }
 
         if (addDates.length > 0) {
           await Promise.all(addDates.map((value) => saveDueDate(value)));
