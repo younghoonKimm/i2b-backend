@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { Repository } from "typeorm";
+import { Repository, Connection } from "typeorm";
 import { InjectRepository } from "@nestjs/typeorm";
 
 import { InfoEntity, StatusStep } from "src/common/entities/info.entity";
@@ -16,12 +16,14 @@ import { AllReviewOutput } from "./dto/review-dto";
 @Injectable()
 export class DashBoardService {
   constructor(
+    private connection: Connection,
     @InjectRepository(InfoEntity) private readonly info: Repository<InfoEntity>,
     @InjectRepository(ReviewEntity)
     private readonly reviewEntity: Repository<ReviewEntity>,
   ) {}
 
   async getEndInfoData(): Promise<EndInfoOutput> {
+    const queryRunner = this.connection.createQueryRunner();
     try {
       const endInfoDatas = await this.info
         .createQueryBuilder("info_entity")
@@ -32,6 +34,35 @@ export class DashBoardService {
         })
         .select([...getInfoDataSelected])
         .getMany();
+
+      // WHERE "updateAt" <= '${compareDate}'
+      // AND "status" != '${StatusStep.end}'
+      // WHERE 'projectStatus' LIKE '%{1, 3}%'
+      // WHERE 'projectStatus' LIKE ANY '(Array['%1%', '%2%', '%3%','%4%','%5'])'`,
+      // COUNT(*)
+      // GROUP BY "projectStatus"
+      // WHERE "targetDevice" LIKE '%.com%'
+      // const prac = await queryRunner.query(
+      //   `SELECT COUNT(*) FROM base_info_entity
+      //   WHERE "projectStatus" LIKE '(ARRAY[%1%])' ::integer[]
+
+      //     `,
+      // );
+
+      // console.log(prac, "isPrac");
+
+      // const prac = await this.info
+      //   .createQueryBuilder("info_entity")
+      //   .leftJoin(`info_entity.baseInfo`, "baseInfo")
+      //   .leftJoin(`info_entity.detailInfo`, "detailInfo")
+      //   .where("info_entity.status = :status", {
+      //     status: `${StatusStep.end}`,
+      //   }).getQuery(`
+      //   SELECT * FROM info_entity.detailInfo
+
+      //   `);
+      // .select(["info_entity.isConfidential", "COUNT(*) baseInfo.projectType"])
+      // .getMany();
 
       const recentInfoDatas = await this.info
         .createQueryBuilder("info_entity")
