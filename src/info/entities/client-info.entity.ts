@@ -53,7 +53,7 @@ export class ClientInfoEntity {
   })
   clientNumber: string;
 
-  @OneToOne(() => InfoEntity, (infoEntity) => infoEntity.baseInfo, {
+  @OneToOne(() => InfoEntity, (infoEntity) => infoEntity.clientInfo, {
     onDelete: "CASCADE",
   })
   info: InfoEntity;

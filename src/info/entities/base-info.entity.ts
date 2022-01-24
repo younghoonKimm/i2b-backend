@@ -1,7 +1,6 @@
 import { Entity, Column, OneToOne, PrimaryGeneratedColumn } from "typeorm";
-import { IsString, IsNumber, Length, IsArray } from "class-validator";
+import { IsString, IsNumber, Length, IsArray, Min, Max } from "class-validator";
 import { InfoEntity } from "src/common/entities/info.entity";
-import { required } from "joi";
 import { ApiProperty } from "@nestjs/swagger";
 import { RadioInput } from "src/common/dto/common.dto";
 
@@ -12,6 +11,8 @@ export class BaseInfoEntity {
 
   @Column()
   @IsNumber()
+  @Min(0)
+  @Max(5)
   @ApiProperty({
     example: 1,
   })
@@ -34,7 +35,7 @@ export class BaseInfoEntity {
   // @Column("text", { array: true })
   // projectRequestLists: string[];
 
-  @OneToOne(() => InfoEntity, (infoEntity) => infoEntity.clientInfo, {
+  @OneToOne(() => InfoEntity, (infoEntity) => infoEntity.baseInfo, {
     onDelete: "CASCADE",
   })
   info: InfoEntity;

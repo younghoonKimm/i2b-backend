@@ -1,10 +1,9 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Repository, Connection } from "typeorm";
+import { Repository, Connection, In } from "typeorm";
 import { v4 as uuidv4 } from "uuid";
 
 import {
-  ManageMentCategoryDto,
   ManagementParentOutput,
   ManageMentSetPriceInput,
   ManageMentSetPriceOutput,
@@ -49,7 +48,7 @@ const createEntity = async (arr, parent, entity, price) => {
 };
 
 //빈곳에 퍼센트 입력
-const setPrecent = (length) =>
+const setPercent = (length) =>
   new Array(length)
     .fill(defaultPercent)
     .map((value, index) => ({ ...value, month: index + 1 }));
@@ -108,6 +107,26 @@ export class ManagementService {
           }
         }
 
+        // const values = [];
+
+        // for (let i = 0; i < dueDates.length; i++) {
+        //   const dueDate = dueDates[i].projDueDateMonth;
+        //   const isValue = array.find((value) => value === dueDate);
+        //   if (isValue) {
+        //     continue;
+        //   } else {
+        //     values.push(dueDates);
+        //   }
+        // }
+
+        // const deleteList = await this.dueDateEntity.find({
+        //   projDueDateMonth: In(values),
+        // });
+
+        // if (!deleteList[0]) {
+        //   this.dueDateEntity.delete(deleteList.map((a) => a.projDueDateSeqNo));
+        // }
+
         if (addDates.length > 0) {
           await Promise.all(addDates.map((value) => saveDueDate(value)));
           await queryRunner.commitTransaction();
@@ -142,6 +161,8 @@ export class ManagementService {
       await this.registerPriceData(dueDateValue);
     } catch {
       await queryRunner.rollbackTransaction();
+    } finally {
+      await queryRunner.release();
     }
   }
 
@@ -151,7 +172,7 @@ export class ManagementService {
       acc.push({
         month: cur,
         ...defaultPrice,
-        precent: setPrecent(cur),
+        percent: setPercent(cur),
       });
       return acc;
     }, []);
@@ -169,7 +190,7 @@ export class ManagementService {
     await queryRunner.startTransaction();
 
     try {
-      Promise.all(
+      await Promise.all(
         categories.map(async (category) => {
           for (let l = 0; l < category.children.length; l++) {
             let newPrice = [];
@@ -186,7 +207,7 @@ export class ManagementService {
                   {
                     month: array[m],
                     ...defaultPrice,
-                    precent: setPrecent(array[m]),
+                    percent: setPercent(array[m]),
                   },
                 ];
               }
@@ -203,6 +224,8 @@ export class ManagementService {
       await queryRunner.commitTransaction();
     } catch (e) {
       await queryRunner.rollbackTransaction();
+    } finally {
+      await queryRunner.release();
     }
   }
 
@@ -219,7 +242,6 @@ export class ManagementService {
       { seqNo },
       { relations: ["children"] },
     );
-
     if (childData) return childData.children;
   }
 
@@ -319,19 +341,12 @@ export class ManagementService {
         .getRepository(ManageMentCategoryEntites)
         .findOne({ seqNo }, { relations: ["children"] });
 
-      // const cate = await queryRunner.query(
-      //   `SELECT * FROM manage_ment_category_entites
-      //    WHERE "seqNo" = '${seqNo}'
-
-      //    `,
-      // );
-
-      Promise.all(
+      await Promise.all(
         data.children.map(async (children) => {
           let newPrice = [];
 
           const beforeData = category.children.find(
-            (child) => child.seqNo === child.seqNo,
+            (child) => children.seqNo === child.seqNo,
           );
 
           for (let m = 0; m < dueDateValue.length; m++) {
@@ -347,7 +362,7 @@ export class ManagementService {
                 {
                   month: dueDateValue[m],
                   ...defaultPrice,
-                  precent: setPrecent(dueDateValue[m]),
+                  percent: setPercent(dueDateValue[m]),
                 },
               ];
             }
@@ -361,6 +376,8 @@ export class ManagementService {
       await queryRunner.commitTransaction();
     } catch (e) {
       await queryRunner.rollbackTransaction();
+    } finally {
+      await queryRunner.release();
     }
   }
 }

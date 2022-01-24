@@ -1,20 +1,14 @@
 import { Controller, Post, UseGuards, Param, Body, Get } from "@nestjs/common";
 import { ManagementService } from "./management.service";
-import { AdminAuthGuards } from "src/auth/auth.guard";
-import { AdminAuthUser } from "src/auth/auth-user.decorator";
-import { JwtService } from "src/jwt/jwt.service";
 import {
-  ManageMentCategoryDto,
   ManageMentSetPriceInput,
   ManagementParentOutput,
   ManageMentSetPriceOutput,
   ManageMentSetDataInput,
 } from "./dto/category.dto";
-import { AuthService } from "src/auth/auth.service";
+
 import { AuthGuard } from "src/middlewares/auth.middleware";
-import { Token } from "src/decorator/admin.decorator";
-import { dueDateValue, parentData } from "src/config";
-import { ManageMentCategoryEntites } from "./entities/category.entity";
+import { dueDateValue } from "src/config";
 import {
   ApiTags,
   ApiOperation,
@@ -95,7 +89,7 @@ export class MangaeMentController {
   // }
 
   @UseGuards(AuthGuard)
-  @Post("/categories/:seqNo/Price")
+  @Post("/categories/:seqNo/price")
   @ApiBearerAuth("bearerAuth")
   @ApiOperation({ summary: "카테고리 세부 가격 수정", description: "" })
   async setPriceData(

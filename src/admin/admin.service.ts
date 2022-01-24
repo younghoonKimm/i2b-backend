@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
-import { AdminInfoEntity } from "./entities/admin-info.entity";
+import { Repository, Connection } from "typeorm";
+import { AdminInfoEntity, AdminRole } from "./entities/admin-info.entity";
 import {
   AdminCreateInputDto,
   AdminMeOutPutDto,
@@ -10,25 +10,44 @@ import {
 import { AdminLoginInput, AdminLoginOutput } from "./dto/admin-login.dto";
 import { AdminEditInput, AdminEditOutput } from "./dto/admin-edit.dto";
 import { JwtService } from "src/jwt/jwt.service";
+import { AdminAllUserOutput } from "./dto/admin-all-user.dto";
 
 @Injectable()
 export class AdminService {
   constructor(
+    private connection: Connection,
     @InjectRepository(AdminInfoEntity)
     private readonly adminInfo: Repository<AdminInfoEntity>,
     private readonly jwtService: JwtService,
   ) {}
+
+  async checkUser(adminId) {
+    const user = await this.adminInfo.findOne({
+      adminId,
+    });
+
+    user ? true : false;
+  }
+
   async createAdminUser(
+    token: any,
     userData: AdminCreateInputDto,
   ): Promise<AdminCreateOutputDto> {
     const { adminId } = userData;
     try {
-      const isAdmin = await this.adminInfo.findOne({ adminId });
-      if (isAdmin) {
-        return { success: false, error: "계정 중복" };
+      const user = await this.adminInfo.findOne({
+        id: token.id,
+      });
+      if (user.role === AdminRole.System) {
+        const isAdmin = await this.adminInfo.findOne({ adminId });
+        if (isAdmin) {
+          return { success: false, error: "계정 중복" };
+        } else {
+          await this.adminInfo.save(this.adminInfo.create(userData));
+          return { success: true };
+        }
       } else {
-        await this.adminInfo.save(this.adminInfo.create(userData));
-        return { success: true };
+        return { error: "권한 없음" };
       }
     } catch (error) {
       console.log(error);
@@ -82,15 +101,70 @@ export class AdminService {
     }
   }
 
+  async getAllAdminUSer(token: any): Promise<AdminAllUserOutput> {
+    try {
+      const users = await this.adminInfo
+        .createQueryBuilder("admin_info_entity")
+        .where(
+          "admin_info_entity.id != :id AND admin_info_entity.role = :role",
+          { id: token.id, role: AdminRole.Watch },
+        )
+        .select([
+          "admin_info_entity.id",
+          "admin_info_entity.adminEmail",
+          "admin_info_entity.adminName",
+          "admin_info_entity.role",
+          "admin_info_entity.updateAt",
+          "admin_info_entity.adminId",
+        ])
+        .getMany();
+      if (users) {
+        return { users };
+      } else {
+        return { error: "사용자가 없습니다." };
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
   async getUserInfo(token: any): Promise<AdminMeOutPutDto> {
     const user = await this.adminInfo.findOne({
       id: token.id,
     });
+
     if (user) {
-      const { adminId, adminName, adminEmail } = user;
-      return { adminId, adminName, adminEmail };
+      const { adminId, adminName, adminEmail, role } = user;
+      return { adminId, adminName, adminEmail, role };
     } else {
       return { error: "notfound" };
+    }
+  }
+
+  async deleteAdminUser(token: any, id: any) {
+    const queryRunner = this.connection.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
+    const user = await queryRunner.manager.findOne(AdminInfoEntity, {
+      id: token.id,
+    });
+    try {
+      if (user) {
+        if (user.role === AdminRole.System) {
+          await queryRunner.manager.delete(AdminInfoEntity, { id });
+        } else {
+          return {
+            error: "권한이 없습니다",
+          };
+        }
+      }
+      await queryRunner.commitTransaction();
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      return { error };
+    } finally {
+      queryRunner.release();
     }
   }
 }

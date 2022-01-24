@@ -128,5 +128,5 @@ export class ManageMentCategoryEntity extends CategoryEntity {
 
   @Column("jsonb", { nullable: true })
   @ApiProperty()
-  children: CategoryEntity[];
+  children?: CategoryEntity[];
 }

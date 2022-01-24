@@ -4,9 +4,9 @@ import { InfoEntity } from "src/common/entities/info.entity";
 import { ApiProperty } from "@nestjs/swagger";
 
 @Entity()
-export class DetailInfo {
-  @PrimaryGeneratedColumn()
-  id: number;
+export class DetailInfoEntity {
+  @PrimaryGeneratedColumn("uuid")
+  id: string;
 
   @Column()
   @IsString()
@@ -33,13 +33,13 @@ export class DetailInfo {
   @Column({ nullable: true })
   @IsNumber()
   @Min(0)
-  @Max(4)
+  @Max(2)
   @ApiProperty({
     example: 0,
   })
   projectDispatch: number;
 
-  @OneToOne(() => InfoEntity, (infoEntity) => infoEntity.clientInfo, {
+  @OneToOne(() => InfoEntity, (infoEntity) => infoEntity.detailInfo, {
     onDelete: "CASCADE",
   })
   info: InfoEntity;

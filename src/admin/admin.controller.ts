@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Put, UseGuards, Get } from "@nestjs/common";
+import { Controller, Post, Body, UseGuards, Get } from "@nestjs/common";
 import { AdminService } from "./admin.service";
 import {
   AdminCreateInputDto,
@@ -16,22 +16,26 @@ import {
   ApiBody,
   ApiBearerAuth,
 } from "@nestjs/swagger";
+import { AdminAllUserOutput } from "./dto/admin-all-user.dto";
 
 @Controller("admin")
 @ApiTags("Admin")
 export class AdminController {
   constructor(private adminService: AdminService) {}
 
+  @UseGuards(AuthGuard)
   @Post("/create")
+  @ApiBearerAuth("bearerAuth")
   @ApiOperation({ summary: "Admin 관리자 생성", description: "" })
   @ApiCreatedResponse({
     description: "Success",
     type: AdminCreateOutputDto,
   })
   createAdminUser(
+    @Token() token: any,
     @Body() adminInfo: AdminCreateInputDto,
   ): Promise<AdminCreateOutputDto> {
-    return this.adminService.createAdminUser(adminInfo);
+    return this.adminService.createAdminUser(token, adminInfo);
   }
 
   @Post("/login")
@@ -61,7 +65,7 @@ export class AdminController {
   ): Promise<AdminEditOutput> {
     return this.adminService.editAdminUser(token, adminEditInput);
   }
-  // @ApiHeader({ name: "Bearer" })
+
   @UseGuards(AuthGuard)
   @Get("/me")
   @ApiBearerAuth("bearerAuth")
@@ -72,5 +76,28 @@ export class AdminController {
   })
   getUserInfo(@Token() token: any): Promise<AdminMeOutPutDto> {
     return this.adminService.getUserInfo(token);
+  }
+
+  @UseGuards(AuthGuard)
+  @Get("/users")
+  @ApiBearerAuth("bearerAuth")
+  // @ApiOperation()
+  // @ApiCreatedResponse()
+  getAllUserInfo(@Token() token: any): Promise<AdminAllUserOutput> {
+    return this.adminService.getAllAdminUSer(token);
+  }
+
+  @UseGuards(AuthGuard)
+  @Post("/user/delete")
+  @ApiBearerAuth("bearerAuth")
+  getDeleteUser(@Token() token: any, @Body() id: any) {
+    return this.adminService.deleteAdminUser(token, id);
+  }
+
+  @UseGuards(AuthGuard)
+  @Get("/user/check")
+  @ApiBearerAuth("bearerAuth")
+  getUserCheck(@Body() adminId: string) {
+    return this.adminService.checkUser(adminId);
   }
 }
