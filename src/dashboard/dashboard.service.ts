@@ -35,34 +35,14 @@ export class DashBoardService {
         .select([...getInfoDataSelected])
         .getMany();
 
-      // WHERE "updateAt" <= '${compareDate}'
-      // AND "status" != '${StatusStep.end}'
-      // WHERE 'projectStatus' LIKE '%{1, 3}%'
-      // WHERE 'projectStatus' LIKE ANY '(Array['%1%', '%2%', '%3%','%4%','%5'])'`,
-      // COUNT(*)
-      // GROUP BY "projectStatus"
-      // WHERE "targetDevice" LIKE '%.com%'
-      // const prac = await queryRunner.query(
-      //   `SELECT COUNT(*) FROM base_info_entity
-      //   WHERE "projectStatus" LIKE '(ARRAY[%1%])' ::integer[]
+      const prac = await queryRunner.query(
+        `SELECT COUNT(*) FROM base_info_entity
+        WHERE CAST("projectStatus" AS text) like '%5%'
+        `,
+      );
 
-      //     `,
-      // );
-
-      // console.log(prac, "isPrac");
-
-      // const prac = await this.info
-      //   .createQueryBuilder("info_entity")
-      //   .leftJoin(`info_entity.baseInfo`, "baseInfo")
-      //   .leftJoin(`info_entity.detailInfo`, "detailInfo")
-      //   .where("info_entity.status = :status", {
-      //     status: `${StatusStep.end}`,
-      //   }).getQuery(`
-      //   SELECT * FROM info_entity.detailInfo
-
-      //   `);
-      // .select(["info_entity.isConfidential", "COUNT(*) baseInfo.projectType"])
-      // .getMany();
+      // select count(*) from base_info_entity where "projectStatus"=any([5])
+      console.log(prac);
 
       const recentInfoDatas = await this.info
         .createQueryBuilder("info_entity")
