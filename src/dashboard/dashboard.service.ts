@@ -35,14 +35,22 @@ export class DashBoardService {
         .select([...getInfoDataSelected])
         .getMany();
 
-      const prac = await queryRunner.query(
-        `SELECT COUNT(*) FROM base_info_entity
-        WHERE CAST("projectStatus" AS text) like '%5%'
-        `,
-      );
+      // const prac = await queryRunner.query(
+      //   `SELECT COUNT(*) FROM base_info_entity
+      //   WHERE CAST("projectStatus" AS text) like '%1%'
+      //   AND CAST("projectStatus" AS text) like '%2%'
+      //   GROUP BY "projectStatus"
+      //   `,
+      // );
+
+      // const prac = await queryRunner.query(
+      //   `
+      //   SELECT base_info_entity
+      //   WHERE "projectStatus(value -> value)" AS "projectStatus_count"
+      //   `,
+      // );
 
       // select count(*) from base_info_entity where "projectStatus"=any([5])
-      console.log(prac);
 
       const recentInfoDatas = await this.info
         .createQueryBuilder("info_entity")

@@ -23,21 +23,6 @@ import { AdminAllUserOutput } from "./dto/admin-all-user.dto";
 export class AdminController {
   constructor(private adminService: AdminService) {}
 
-  @UseGuards(AuthGuard)
-  @Post("/create")
-  @ApiBearerAuth("bearerAuth")
-  @ApiOperation({ summary: "Admin 관리자 생성", description: "" })
-  @ApiCreatedResponse({
-    description: "Success",
-    type: AdminCreateOutputDto,
-  })
-  createAdminUser(
-    @Token() token: any,
-    @Body() adminInfo: AdminCreateInputDto,
-  ): Promise<AdminCreateOutputDto> {
-    return this.adminService.createAdminUser(token, adminInfo);
-  }
-
   @Post("/login")
   @ApiBody({ type: AdminLoginInput })
   @ApiOperation({ summary: "Admin 관리자 로그인", description: "" })
@@ -88,9 +73,24 @@ export class AdminController {
   }
 
   @UseGuards(AuthGuard)
+  @Post("/user/create")
+  @ApiBearerAuth("bearerAuth")
+  @ApiOperation({ summary: "Admin 관리자 생성", description: "" })
+  @ApiCreatedResponse({
+    description: "Success",
+    type: AdminCreateOutputDto,
+  })
+  createAdminUser(
+    @Token() token: any,
+    @Body() data: AdminCreateInputDto,
+  ): Promise<AdminCreateOutputDto> {
+    return this.adminService.createAdminUser(token, data);
+  }
+
+  @UseGuards(AuthGuard)
   @Post("/user/delete")
   @ApiBearerAuth("bearerAuth")
-  getDeleteUser(@Token() token: any, @Body() id: any) {
+  deleteUser(@Token() token: any, @Body() id: any) {
     return this.adminService.deleteAdminUser(token, id);
   }
 
