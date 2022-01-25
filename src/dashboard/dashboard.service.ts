@@ -91,8 +91,11 @@ export class DashBoardService {
     }
   }
 
-  async getSearchata(searchData: any): Promise<AllSearchOutputData> {
-    const { page, status, isConfidential, startDate, endDate } = searchData;
+  async getSearchata(
+    page: number,
+    searchData: any,
+  ): Promise<AllSearchOutputData> {
+    const { status, isConfidential, startDate, endDate } = searchData;
     const endEnum = StatusStep.end;
 
     try {

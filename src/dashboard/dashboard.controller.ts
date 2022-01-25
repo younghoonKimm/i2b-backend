@@ -17,11 +17,12 @@ export class DashboardController {
   }
 
   @UseGuards(AuthGuard)
-  @Get("/search")
+  @Get("/search/:page")
   async getSearchInfoData(
+    @Param() { page }: { page: number },
     @Body() searchData: any,
   ): Promise<AllSearchOutputData> {
-    return this.dashboardService.getSearchata(searchData);
+    return this.dashboardService.getSearchata(page, searchData);
   }
 
   @UseGuards(AuthGuard)
