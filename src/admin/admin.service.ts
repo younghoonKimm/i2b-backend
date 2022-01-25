@@ -38,6 +38,10 @@ export class AdminService {
   ): Promise<AdminCreateOutputDto> {
     const { adminId } = data;
 
+    const queryRunner = this.connection.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
     try {
       const user = await this.adminInfo.findOne({
         id: token.id,
@@ -48,15 +52,22 @@ export class AdminService {
         if (isAdmin) {
           return { success: false, error: "계정 중복" };
         } else {
-          await this.adminInfo.save(this.adminInfo.create(data));
-          return { success: true };
+          await queryRunner.manager.save(AdminInfoEntity, {
+            ...data,
+          });
+
+          // await this.adminInfo.save(this.adminInfo.create(data));
         }
+        await queryRunner.commitTransaction();
+        return { success: true };
       } else {
+        await queryRunner.rollbackTransaction();
         return { error: "권한 없음" };
       }
     } catch (error) {
-      console.log(error);
       return { error };
+    } finally {
+      queryRunner.release();
     }
   }
 
