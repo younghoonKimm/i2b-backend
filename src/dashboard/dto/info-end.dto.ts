@@ -1,6 +1,5 @@
 import { PickType, PartialType } from "@nestjs/swagger";
 import { InfoEntity } from "src/common/entities/info.entity";
-import { ReviewEntity } from "src/info/entities/review.entitiy";
 
 class AllInfoDto extends PickType(PartialType(InfoEntity), [
   "isConfidential",

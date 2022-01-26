@@ -98,21 +98,26 @@ export class DashBoardService {
     const { status, isConfidential, startDate, endDate } = searchData;
     const endEnum = StatusStep.end;
 
+    const isConfidentialQuery = isConfidential
+      ? "AND info_entity.isConfidential = :isConfidential"
+      : "";
+
+    const isStatusQuery = status
+      ? status === endEnum
+        ? "AND info_entity.status = :status "
+        : "AND info_entity.status != :status"
+      : "";
+
     try {
       const [endReviewDatas, endReviewDatasTotal] = await this.info
         .createQueryBuilder("info_entity")
         .leftJoin(`info_entity.clientInfo`, "clientInfo")
         .select([...getSearchDataSelected])
         .where(
-          `info_entity.status ${
-            status === endEnum ? "=" : "!="
-          } :status AND info_entity.updateAt >= :startDate
+          `info_entity.updateAt >= :startDate
             AND info_entity.updateAt <= :endDate
-          ${
-            isConfidential
-              ? "AND info_entity.isConfidential = :isConfidential"
-              : ""
-          }
+          ${isStatusQuery}
+          ${isConfidentialQuery}
           `,
           {
             status: `${endEnum}`,
