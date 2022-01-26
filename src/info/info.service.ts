@@ -128,7 +128,8 @@ export class InfoService {
   }
 
   async createInfo(infoData: InfoDto): Promise<ClientInfoOutput> {
-    const queryRunner = this.connection.createQueryRunner();
+    // const queryRunner = this.connection.createQueryRunner();
+
     try {
       // const exists = await this.info.findOne({
       //   clientEmail: infoData.clientEmail,
@@ -169,11 +170,14 @@ export class InfoService {
 
       return { token };
     } catch (error) {
-      await queryRunner.rollbackTransaction();
       return { error };
-    } finally {
-      queryRunner.release();
     }
+    // } catch (error) {
+    //   await queryRunner.rollbackTransaction();
+    //   return { error };
+    // } finally {
+    //   queryRunner.release();
+    // }
   }
 
   @Cron("0 1 * * *", {
