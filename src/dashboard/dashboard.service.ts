@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { Repository } from "typeorm";
+import { Repository, Connection } from "typeorm";
 import { InjectRepository } from "@nestjs/typeorm";
 
 import { InfoEntity, StatusStep } from "src/common/entities/info.entity";
@@ -16,12 +16,14 @@ import { AllReviewOutput } from "./dto/review-dto";
 @Injectable()
 export class DashBoardService {
   constructor(
+    private connection: Connection,
     @InjectRepository(InfoEntity) private readonly info: Repository<InfoEntity>,
     @InjectRepository(ReviewEntity)
     private readonly reviewEntity: Repository<ReviewEntity>,
   ) {}
 
   async getEndInfoData(): Promise<EndInfoOutput> {
+    const queryRunner = this.connection.createQueryRunner();
     try {
       const endInfoDatas = await this.info
         .createQueryBuilder("info_entity")
@@ -32,6 +34,23 @@ export class DashBoardService {
         })
         .select([...getInfoDataSelected])
         .getMany();
+
+      // const prac = await queryRunner.query(
+      //   `SELECT COUNT(*) FROM base_info_entity
+      //   WHERE CAST("projectStatus" AS text) like '%1%'
+      //   AND CAST("projectStatus" AS text) like '%2%'
+      //   GROUP BY "projectStatus"
+      //   `,
+      // );
+
+      // const prac = await queryRunner.query(
+      //   `
+      //   SELECT base_info_entity
+      //   WHERE "projectStatus(value -> value)" AS "projectStatus_count"
+      //   `,
+      // );
+
+      // select count(*) from base_info_entity where "projectStatus"=any([5])
 
       const recentInfoDatas = await this.info
         .createQueryBuilder("info_entity")
@@ -72,9 +91,22 @@ export class DashBoardService {
     }
   }
 
-  async getSearchata(searchData: any): Promise<AllSearchOutputData> {
-    const { page, status, isConfidential, startDate, endDate } = searchData;
+  async getSearchata(
+    page: number,
+    searchData: any,
+  ): Promise<AllSearchOutputData> {
+    const { status, isConfidential, startDate, endDate } = searchData;
     const endEnum = StatusStep.end;
+
+    const isConfidentialQuery = isConfidential
+      ? "AND info_entity.isConfidential = :isConfidential"
+      : "";
+
+    const isStatusQuery = status
+      ? status === endEnum
+        ? "AND info_entity.status = :status "
+        : "AND info_entity.status != :status"
+      : "";
 
     try {
       const [endReviewDatas, endReviewDatasTotal] = await this.info
@@ -82,15 +114,10 @@ export class DashBoardService {
         .leftJoin(`info_entity.clientInfo`, "clientInfo")
         .select([...getSearchDataSelected])
         .where(
-          `info_entity.status ${
-            status === endEnum ? "=" : "!="
-          } :status AND info_entity.updateAt >= :startDate
+          `info_entity.updateAt >= :startDate
             AND info_entity.updateAt <= :endDate
-          ${
-            isConfidential
-              ? "AND info_entity.isConfidential = :isConfidential"
-              : ""
-          }
+          ${isStatusQuery}
+          ${isConfidentialQuery}
           `,
           {
             status: `${endEnum}`,

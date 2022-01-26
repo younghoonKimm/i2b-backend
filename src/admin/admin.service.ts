@@ -26,32 +26,48 @@ export class AdminService {
       adminId,
     });
 
-    user ? true : false;
+    if (user) {
+      return true;
+    } else {
+      return false;
+    }
   }
-
   async createAdminUser(
     token: any,
-    userData: AdminCreateInputDto,
+    data: AdminCreateInputDto,
   ): Promise<AdminCreateOutputDto> {
-    const { adminId } = userData;
+    const { adminId } = data;
+
+    const queryRunner = this.connection.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
     try {
       const user = await this.adminInfo.findOne({
         id: token.id,
       });
+
       if (user.role === AdminRole.System) {
         const isAdmin = await this.adminInfo.findOne({ adminId });
         if (isAdmin) {
           return { success: false, error: "계정 중복" };
         } else {
-          await this.adminInfo.save(this.adminInfo.create(userData));
-          return { success: true };
+          await queryRunner.manager.save(AdminInfoEntity, {
+            ...data,
+          });
+
+          // await this.adminInfo.save(this.adminInfo.create(data));
         }
+        await queryRunner.commitTransaction();
+        return { success: true };
       } else {
+        await queryRunner.rollbackTransaction();
         return { error: "권한 없음" };
       }
     } catch (error) {
-      console.log(error);
       return { error };
+    } finally {
+      queryRunner.release();
     }
   }
 
@@ -141,30 +157,23 @@ export class AdminService {
     }
   }
 
-  async deleteAdminUser(token: any, id: any) {
-    const queryRunner = this.connection.createQueryRunner();
-    await queryRunner.connect();
-    await queryRunner.startTransaction();
-
-    const user = await queryRunner.manager.findOne(AdminInfoEntity, {
+  async deleteAdminUser(token: any, { id }: any) {
+    const user = await this.adminInfo.findOne({
       id: token.id,
     });
+
     try {
       if (user) {
         if (user.role === AdminRole.System) {
-          await queryRunner.manager.delete(AdminInfoEntity, { id });
+          return await this.adminInfo.delete({ id });
         } else {
           return {
             error: "권한이 없습니다",
           };
         }
       }
-      await queryRunner.commitTransaction();
     } catch (error) {
-      await queryRunner.rollbackTransaction();
       return { error };
-    } finally {
-      queryRunner.release();
     }
   }
 }

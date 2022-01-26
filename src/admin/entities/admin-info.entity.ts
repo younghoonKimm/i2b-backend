@@ -1,7 +1,6 @@
 import { Entity, Column, BeforeInsert, BeforeUpdate } from "typeorm";
 import { InternalServerErrorException } from "@nestjs/common";
-import { IsString, IsNumber, Length, IsEmail, IsEnum } from "class-validator";
-import { Exclude } from "class-transformer";
+import { IsString, Length, IsEmail, IsEnum } from "class-validator";
 
 import * as bcrypt from "bcrypt";
 import { CommonEntitiy } from "src/common/entities/common.entity";
@@ -19,7 +18,7 @@ export class AdminInfoEntity extends CommonEntitiy {
 
   @Column({ nullable: true, select: false })
   @IsString()
-  @Length(13, 30)
+  @Length(10, 30)
   adminPw: string;
 
   @Column({ type: "enum", enum: AdminRole, default: AdminRole.Watch })
