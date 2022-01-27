@@ -6,8 +6,8 @@ import {
 } from "./entities/category.entity";
 import { MangaeMentController } from "./management.controller";
 import { ManagementService } from "./management.service";
-import { AdminInfoEntity } from "src/admin/entities/admin-info.entity";
 import { DueDateEntity } from "./entities/dueDate.entity";
+import { PMEntity } from "./entities/pm.entity";
 
 @Module({
   imports: [
@@ -15,6 +15,7 @@ import { DueDateEntity } from "./entities/dueDate.entity";
       ManageMentCategoryEntites,
       ManageMentCategoryEntity,
       DueDateEntity,
+      PMEntity,
     ]),
   ],
   controllers: [MangaeMentController],

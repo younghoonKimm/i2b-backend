@@ -5,6 +5,7 @@ import {
   ManagementParentOutput,
   ManageMentSetPriceOutput,
   ManageMentSetDataInput,
+  ManagementAllOutput,
 } from "./dto/category.dto";
 
 import { AuthGuard } from "src/middlewares/auth.middleware";
@@ -23,6 +24,7 @@ export class MangaeMentController {
   constructor(private manageMentService: ManagementService) {
     this.manageMentService.registerDueDate(dueDateValue);
     this.manageMentService.registerPriceData(dueDateValue);
+    this.manageMentService.setPMData(dueDateValue);
   }
 
   @UseGuards(AuthGuard)
@@ -39,6 +41,18 @@ export class MangaeMentController {
   }
 
   @UseGuards(AuthGuard)
+  @Get("/allcategories")
+  @ApiBearerAuth("bearerAuth")
+  @ApiOperation({ summary: "카테고리 반환", description: "" })
+  @ApiCreatedResponse({
+    description: "Success",
+    type: [ManagementAllOutput],
+  })
+  async getAllCategories(): Promise<ManagementAllOutput[]> {
+    return this.manageMentService.getAllCategoryData();
+  }
+
+  @UseGuards(AuthGuard)
   @Get("/categories")
   @ApiBearerAuth("bearerAuth")
   @ApiOperation({ summary: "카테고리 반환", description: "" })
@@ -47,7 +61,7 @@ export class MangaeMentController {
     type: [ManagementParentOutput],
   })
   async getCategoryParent(): Promise<ManagementParentOutput[]> {
-    return this.manageMentService.getAllParentData();
+    return this.manageMentService.getAllCategoryParentData();
   }
 
   @UseGuards(AuthGuard)
@@ -58,7 +72,7 @@ export class MangaeMentController {
     description: "seqNo는 최상위 부모값",
   })
   async getCategoryChildren(@Param("seqNo") seqNo?: string) {
-    return this.manageMentService.getChildData(seqNo);
+    return this.manageMentService.getCategoryChildData(seqNo);
   }
 
   @UseGuards(AuthGuard)
@@ -80,14 +94,6 @@ export class MangaeMentController {
     return this.manageMentService.saveCategoryData(data, seqNo);
   }
 
-  // @UseGuards(AuthGuard)
-  // @Get("/categories/:seqNo/Price")
-  // @ApiBearerAuth("bearerAuth")
-  // @ApiOperation({ summary: "카테고리 세부 가격", description: "" })
-  // async getPriceData(@Param("seqNo") seqNo?: string) {
-  //   return this.manageMentService.getPriceData(seqNo);
-  // }
-
   @UseGuards(AuthGuard)
   @Post("/categories/:seqNo/price")
   @ApiBearerAuth("bearerAuth")
@@ -98,5 +104,13 @@ export class MangaeMentController {
     @Param("seqNo") seqNo: string,
   ) {
     return this.manageMentService.setPriceData(data, seqNo);
+  }
+
+  @UseGuards(AuthGuard)
+  @Get("/pm")
+  @ApiBearerAuth("bearerAuth")
+  @ApiOperation({ summary: "PM Data 불러오기", description: "" })
+  async getPriceData() {
+    return this.manageMentService.getPMData();
   }
 }
