@@ -52,3 +52,10 @@ export class ManagementParentOutput extends PickType(
   ManageMentCategoryEntites,
   ["name", "isHidden", "order"],
 ) {}
+
+export class ManagementAllOutput extends PickType(ManageMentCategoryEntites, [
+  "name",
+  "isHidden",
+  "order",
+  "children",
+]) {}

@@ -36,6 +36,7 @@ import { DashboardModule } from "./dashboard/dashboard.module";
 import { ReviewEntity } from "./info/entities/review.entitiy";
 import { DeliverablesModule } from "./deliverables/deliverables.module";
 import { DeliverablesEntity } from "./deliverables/entitiy/deliverables.entitiy";
+import { PMEntity } from "./management/entities/pm.entity";
 
 @Module({
   imports: [
@@ -80,6 +81,7 @@ import { DeliverablesEntity } from "./deliverables/entitiy/deliverables.entitiy"
         DueDateEntity,
         ScheduleInfoEntity,
         DeliverablesEntity,
+        PMEntity,
       ],
       synchronize: true,
       logging: process.env.NODE_ENV !== "production",
