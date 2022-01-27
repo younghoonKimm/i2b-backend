@@ -62,7 +62,7 @@ class PercentsDto {
   percentLow: number;
 }
 
-class CategoryPriceDto {
+export class CategoryPriceDto {
   @PrimaryGeneratedColumn("uuid")
   dueSeqNo: string;
 

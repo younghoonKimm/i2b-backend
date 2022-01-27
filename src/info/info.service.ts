@@ -135,7 +135,7 @@ export class InfoService {
       //   clientEmail: infoData.clientEmail,
       // });
 
-      if (!infoData.clientInfo) return { error: "에러" };
+      if (!infoData.clientInfo) return { error: "dont't have  client Info" };
 
       // if (exists) {
       //   const token = this.jwtService.sign({ id: exists.id });

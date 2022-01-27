@@ -17,8 +17,8 @@ export class ScheduleInfoEntity {
 
   @Column()
   @IsNumber()
-  @Min(0)
-  @Max(4)
+  @Min(1)
+  @Max(9)
   @ApiProperty({
     example: 1,
   })

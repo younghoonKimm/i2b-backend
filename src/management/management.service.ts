@@ -8,11 +8,13 @@ import {
   ManageMentSetPriceInput,
   ManageMentSetPriceOutput,
   ManageMentSetDataInput,
+  ManagementAllOutput,
 } from "./dto/category.dto";
 import {
   ManageMentCategoryEntites,
   ManageMentCategoryEntity,
 } from "./entities/category.entity";
+import { PMEntity } from "./entities/pm.entity";
 import { DueDateEntity } from "./entities/dueDate.entity";
 import {
   dueDateValue,
@@ -63,6 +65,8 @@ export class ManagementService {
     private readonly manageMentCategoryEntity: Repository<ManageMentCategoryEntity>,
     @InjectRepository(DueDateEntity)
     private readonly dueDateEntity: Repository<DueDateEntity>,
+    @InjectRepository(PMEntity)
+    private readonly pmEntity: Repository<PMEntity>,
   ) {}
 
   async getAllDueDate(): Promise<DueDateEntity[]> {
@@ -229,7 +233,15 @@ export class ManagementService {
     }
   }
 
-  async getAllParentData(): Promise<ManagementParentOutput[]> {
+  async getAllCategoryData(): Promise<ManagementAllOutput[]> {
+    const allData = await this.ManageMentCategoryEntites.find({
+      relations: ["children"],
+    });
+
+    return allData;
+  }
+
+  async getAllCategoryParentData(): Promise<ManagementParentOutput[]> {
     const categories = await this.ManageMentCategoryEntites.createQueryBuilder(
       "management_category_entites",
     ).getMany();
@@ -237,7 +249,7 @@ export class ManagementService {
     return categories;
   }
 
-  async getChildData(seqNo: string) {
+  async getCategoryChildData(seqNo: string) {
     const childData = await this.ManageMentCategoryEntites.findOne(
       { seqNo },
       { relations: ["children"] },
@@ -379,5 +391,70 @@ export class ManagementService {
     } finally {
       await queryRunner.release();
     }
+  }
+
+  //PM DATA 영역
+  async setPMData(array: number[]) {
+    const queryRunner = this.connection.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
+    try {
+      const isPMData = await this.pmEntity.findOne();
+      let newPrice = [];
+      if (isPMData) {
+        await Promise.all(
+          array.map(async (_, index) => {
+            const keepPrice = isPMData?.price.find(
+              (priceData) => priceData.month === array[index],
+            );
+            if (keepPrice) {
+              newPrice = [...newPrice, keepPrice];
+            } else {
+              newPrice = [
+                ...newPrice,
+                {
+                  month: array[index],
+                  ...defaultPrice,
+                  percent: setPercent(array[index]),
+                },
+              ];
+            }
+          }),
+        );
+        await queryRunner.manager.save(PMEntity, {
+          ...isPMData,
+          price: newPrice,
+        });
+      } else {
+        await Promise.all(
+          array.map(async (_, index) => {
+            newPrice = [
+              {
+                month: array[index],
+                ...defaultPrice,
+                percent: setPercent(array[index]),
+              },
+            ];
+          }),
+        );
+        await queryRunner.manager.save(PMEntity, {
+          price: newPrice,
+        });
+      }
+      await queryRunner.commitTransaction();
+      // this.pmEntity.save(this.pmEntity({}));
+      // await Promise.all();
+    } catch (error) {
+      console.log(error);
+      await queryRunner.rollbackTransaction();
+      return { error };
+    } finally {
+      await queryRunner.release();
+    }
+  }
+
+  async getPMData() {
+    return this.pmEntity.find();
   }
 }
