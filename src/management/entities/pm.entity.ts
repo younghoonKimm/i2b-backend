@@ -1,7 +1,7 @@
 import { PickType, ApiProperty } from "@nestjs/swagger";
 import { CategoryEntity, CategoryPriceDto } from "./category.entity";
 import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
-import { IsNumber, IsString } from "class-validator";
+import { IsNumber, IsString, IsBoolean } from "class-validator";
 
 @Entity()
 export class PMEntity extends PickType(CategoryEntity, ["name"]) {
@@ -21,7 +21,12 @@ export class PMEntity extends PickType(CategoryEntity, ["name"]) {
   @Column({ default: 1 })
   @ApiProperty()
   @IsNumber()
-  defaultCount: number;
+  hiddenCount: number;
+
+  @Column({ default: false })
+  @ApiProperty()
+  @IsBoolean()
+  isHidden: boolean;
 
   @Column("jsonb", { nullable: true })
   @ApiProperty()

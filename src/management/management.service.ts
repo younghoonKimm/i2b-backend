@@ -394,7 +394,7 @@ export class ManagementService {
   }
 
   //PM DATA 영역
-  async setPMData(array: number[]) {
+  async registerPMData(array: number[]) {
     const queryRunner = this.connection.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
@@ -456,5 +456,12 @@ export class ManagementService {
 
   async getPMData() {
     return this.pmEntity.find();
+  }
+
+  async setPMData(data: any) {
+    console.log(data);
+    if (data) {
+      return this.pmEntity.save({ ...data });
+    }
   }
 }
