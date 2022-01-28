@@ -459,7 +459,6 @@ export class ManagementService {
   }
 
   async setPMData(data: any) {
-    console.log(data);
     if (data) {
       return this.pmEntity.save({ ...data });
     }
