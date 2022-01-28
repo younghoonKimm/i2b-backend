@@ -97,7 +97,7 @@ export class AdminService {
       if (!user) return { success: false, error: "아이디 중복" };
 
       // const decoded = this.jwtService.verify(user.adminPw.toString());
-      console.log(user);
+
       // console.log("a");
       if (adminEmail) {
         user.adminEmail = adminEmail;

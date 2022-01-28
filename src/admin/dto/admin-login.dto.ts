@@ -13,7 +13,6 @@ export class AdminLoginInput {
     example: "system",
     required: true,
   })
-  @Column()
   @IsString()
   adminId: string;
 
@@ -21,7 +20,6 @@ export class AdminLoginInput {
     example: "olivestonelab12##",
     required: true,
   })
-  @Column()
   @IsString()
   @Length(13, 30)
   adminPw: string;
@@ -29,17 +27,14 @@ export class AdminLoginInput {
 
 export class AdminLoginOutput {
   @ApiProperty()
-  @Column({ nullable: true })
   @IsString()
   id?: string;
 
   @ApiProperty()
-  @Column({ nullable: true })
   @IsString()
   token?: string;
 
   @ApiProperty()
-  @Column()
   @IsBoolean()
   error?: string;
 }
