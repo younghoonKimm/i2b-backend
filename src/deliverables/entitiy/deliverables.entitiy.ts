@@ -1,5 +1,5 @@
 import { PrimaryGeneratedColumn, Column, Entity } from "typeorm";
-import { PickType } from "@nestjs/swagger";
+import { PickType, ApiProperty } from "@nestjs/swagger";
 import { CategoryEntity } from "src/management/entities/category.entity";
 
 export class DeliverLists extends PickType(CategoryEntity, ["seqNo"]) {
@@ -16,6 +16,6 @@ export class DeliverablesEntity {
   deliverable: string;
 
   @Column("jsonb", { nullable: true })
-  //   @ApiProperty()
+  @ApiProperty()
   deliverablesLists: DeliverLists[];
 }

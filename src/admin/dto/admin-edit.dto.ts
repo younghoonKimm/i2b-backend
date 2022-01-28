@@ -7,13 +7,19 @@ export class AdminEditInput {
   @ApiProperty({
     example: "dev@olivestonelab.com",
   })
-  adminEmail: string;
+  adminEmail?: string;
 
   @IsString()
   @ApiProperty({
     example: "olivestonelab12##",
   })
-  adminPw: string;
+  adminPw?: string;
+
+  @IsString()
+  @ApiProperty({
+    example: "olivestonelab12##",
+  })
+  adminChnagePw?: string;
 }
 
 export class AdminEditOutput extends CommonOutPut {}

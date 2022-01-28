@@ -46,7 +46,7 @@ export class AdminController {
   })
   editAdminUser(
     @Token() token: any,
-    @Body() adminEditInput: AdminEditInput,
+    @Body() adminEditInput: any,
   ): Promise<AdminEditOutput> {
     return this.adminService.editAdminUser(token, adminEditInput);
   }
