@@ -43,13 +43,16 @@ export class DashBoardService {
       //   `,
       // );
 
+      //       SELECT port, count(*) AS ct
+      // FROM   tbl t, unnest(t.ports) AS port  -- implicit LATERAL join
+      // GROUP  BY port;
+
       // const prac = await queryRunner.query(
       //   `
-      //   SELECT base_info_entity
-      //   WHERE "projectStatus(value -> value)" AS "projectStatus_count"
+      //   SELECT json_array_length('["1","2","3","4","5"]') AS length FROM "base_info_entity";
       //   `,
       // );
-
+      // console.log(prac);
       // select count(*) from base_info_entity where "projectStatus"=any([5])
 
       const recentInfoDatas = await this.info
