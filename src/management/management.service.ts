@@ -430,6 +430,7 @@ export class ManagementService {
         await Promise.all(
           array.map(async (_, index) => {
             newPrice = [
+              ...newPrice,
               {
                 month: array[index],
                 ...defaultPrice,
@@ -442,6 +443,7 @@ export class ManagementService {
           price: newPrice,
         });
       }
+      console.log("newPrice:", newPrice);
       await queryRunner.commitTransaction();
       // this.pmEntity.save(this.pmEntity({}));
       // await Promise.all();
