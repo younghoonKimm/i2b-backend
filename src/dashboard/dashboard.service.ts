@@ -35,6 +35,13 @@ export class DashBoardService {
         .select([...getInfoDataSelected])
         .getMany();
 
+      //     const prac = await queryRunner.query(`
+      //     SELECT COUNT(t), t
+      //     FROM (SELECT jsonb_array_elements_text('[1,2]'::jsonb) AS t
+      //     FROM base_info_entity WHERE 'projectStatus' = '[1,3]') AS t1
+      //     GROUP BY t
+      // `);
+
       // const prac = await queryRunner.query(
       //   `SELECT COUNT(*) FROM base_info_entity
       //   WHERE CAST("projectStatus" AS text) like '%1%'
@@ -42,7 +49,23 @@ export class DashBoardService {
       //   GROUP BY "projectStatus"
       //   `,
       // );
+      // COUNT(*)
+      // const prac = await queryRunner.query(
+      //   `SELECT COUNT(t), t
+      //    FROM (SELECT jsonb_array_elements_text(json->'base_info_entity.projectStatus') AS t
+      //    FROM TWEETS WHERE event_id = XX) AS t1
+      //    GROUP BY t
+      //   `,
+      // );
 
+      // const prac = await queryRunner.query(`
+      //     SELECT COUNT(t), t
+      //     FROM (SELECT jsonb_array_elements_text("projectStatus" -> '[1,2]'::int[]) AS t
+      //     FROM base_info_entity WHERE 'projectStatus' = '[1,3]') AS t1
+      //     GROUP BY t
+      // `);
+
+      // console.log(prac);
       //       SELECT port, count(*) AS ct
       // FROM   tbl t, unnest(t.ports) AS port  -- implicit LATERAL join
       // GROUP  BY port;
