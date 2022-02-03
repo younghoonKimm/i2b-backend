@@ -24,7 +24,7 @@ export class MangaeMentController {
   constructor(private manageMentService: ManagementService) {
     this.manageMentService.registerDueDate(dueDateValue);
     this.manageMentService.registerPriceData(dueDateValue);
-    this.manageMentService.setPMData(dueDateValue);
+    this.manageMentService.registerPMData(dueDateValue);
   }
 
   @UseGuards(AuthGuard)
@@ -112,5 +112,13 @@ export class MangaeMentController {
   @ApiOperation({ summary: "PM Data 불러오기", description: "" })
   async getPriceData() {
     return this.manageMentService.getPMData();
+  }
+
+  @UseGuards(AuthGuard)
+  @Post("/pm")
+  @ApiBearerAuth("bearerAuth")
+  @ApiOperation({ summary: "PM Data 불러오기", description: "" })
+  async setPMData(@Body() data: any) {
+    return this.manageMentService.setPMData(data);
   }
 }

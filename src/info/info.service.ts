@@ -43,7 +43,15 @@ export class InfoService {
       const user = await this.info.findOne(id, {
         relations: ["clientInfo", "baseInfo", "detailInfo", "scheduleInfo"],
       });
-      return user;
+
+      return {
+        isConfidential: user.isConfidential,
+        status: user.status,
+        clientInfo: user.clientInfo,
+        baseInfo: user.baseInfo,
+        detailInfo: user.detailInfo,
+        scheduleInfo: user.scheduleInfo,
+      };
     } catch (error) {
       console.log(error);
     }

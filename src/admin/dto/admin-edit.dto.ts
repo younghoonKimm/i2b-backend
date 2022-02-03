@@ -1,19 +1,14 @@
 import { IsEmail, IsString } from "class-validator";
-import { ApiProperty } from "@nestjs/swagger";
+import { ApiProperty, PickType, PartialType } from "@nestjs/swagger";
 import { CommonOutPut } from "src/common/dto/common.dto";
+import { AdminInfoEntity } from "../entities/admin-info.entity";
 
 export class AdminEditInput {
-  @IsEmail()
-  @ApiProperty({
-    example: "dev@olivestonelab.com",
-  })
-  adminEmail: string;
+  adminChnagePw?: string;
 
-  @IsString()
-  @ApiProperty({
-    example: "olivestonelab12##",
-  })
-  adminPw: string;
+  adminEmail?: string;
+
+  adminPw?: string;
 }
 
 export class AdminEditOutput extends CommonOutPut {}

@@ -38,36 +38,29 @@ export class AdminService {
   ): Promise<AdminCreateOutputDto> {
     const { adminId } = data;
 
-    const queryRunner = this.connection.createQueryRunner();
-    await queryRunner.connect();
-    await queryRunner.startTransaction();
-
     try {
-      const user = await this.adminInfo.findOne({
-        id: token.id,
-      });
+      const user = await this.adminInfo.findOne({ id: token.id });
 
       if (user.role === AdminRole.System) {
         const isAdmin = await this.adminInfo.findOne({ adminId });
         if (isAdmin) {
           return { success: false, error: "계정 중복" };
         } else {
-          await queryRunner.manager.save(AdminInfoEntity, {
-            ...data,
-          });
+          await this.adminInfo.save(
+            this.adminInfo.create({
+              ...data,
+            }),
+          );
 
           // await this.adminInfo.save(this.adminInfo.create(data));
         }
-        await queryRunner.commitTransaction();
+
         return { success: true };
       } else {
-        await queryRunner.rollbackTransaction();
         return { error: "권한 없음" };
       }
     } catch (error) {
       return { error };
-    } finally {
-      queryRunner.release();
     }
   }
 
@@ -92,17 +85,20 @@ export class AdminService {
   }
 
   async editAdminUser(
-    authUser: string,
-    { adminEmail, adminPw }: AdminEditInput,
+    token: any,
+    adminEditInput: AdminEditInput,
   ): Promise<AdminEditOutput> {
+    const { adminEmail, adminPw, adminChnagePw } = adminEditInput;
     try {
-      const decoded = this.jwtService.verify(authUser.toString());
       const user = await this.adminInfo.findOne({
-        id: decoded.id,
+        id: token.id,
       });
 
       if (!user) return { success: false, error: "아이디 중복" };
 
+      // const decoded = this.jwtService.verify(user.adminPw.toString());
+
+      // console.log("a");
       if (adminEmail) {
         user.adminEmail = adminEmail;
         await this.adminInfo.save(user);
@@ -150,8 +146,8 @@ export class AdminService {
     });
 
     if (user) {
-      const { adminId, adminName, adminEmail, role } = user;
-      return { adminId, adminName, adminEmail, role };
+      const { adminId, adminName, adminEmail, role, createdAt } = user;
+      return { adminId, adminName, adminEmail, role, createdAt };
     } else {
       return { error: "notfound" };
     }

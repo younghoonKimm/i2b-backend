@@ -15,6 +15,7 @@ export class AdminMeOutPutDto extends PickType(PartialType(AdminInfoEntity), [
   "adminName",
   "adminEmail",
   "role",
+  "createdAt",
 ]) {
   @IsString()
   error?: string;

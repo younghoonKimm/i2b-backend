@@ -394,7 +394,7 @@ export class ManagementService {
   }
 
   //PM DATA 영역
-  async setPMData(array: number[]) {
+  async registerPMData(array: number[]) {
     const queryRunner = this.connection.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
@@ -430,6 +430,7 @@ export class ManagementService {
         await Promise.all(
           array.map(async (_, index) => {
             newPrice = [
+              ...newPrice,
               {
                 month: array[index],
                 ...defaultPrice,
@@ -442,6 +443,7 @@ export class ManagementService {
           price: newPrice,
         });
       }
+
       await queryRunner.commitTransaction();
       // this.pmEntity.save(this.pmEntity({}));
       // await Promise.all();
@@ -456,5 +458,11 @@ export class ManagementService {
 
   async getPMData() {
     return this.pmEntity.find();
+  }
+
+  async setPMData(data: any) {
+    if (data) {
+      return this.pmEntity.save({ ...data });
+    }
   }
 }
