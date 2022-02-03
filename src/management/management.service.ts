@@ -443,7 +443,7 @@ export class ManagementService {
           price: newPrice,
         });
       }
-      console.log("newPrice:", newPrice);
+
       await queryRunner.commitTransaction();
       // this.pmEntity.save(this.pmEntity({}));
       // await Promise.all();
