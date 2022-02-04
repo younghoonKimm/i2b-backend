@@ -96,9 +96,9 @@ export class AdminController {
   }
 
   @UseGuards(AuthGuard)
-  @Get("/user/check")
+  @Post("/user/check")
   @ApiBearerAuth("bearerAuth")
-  getUserCheck(@Body() adminId: string) {
+  getUserCheck(@Body() { adminId }: any) {
     return this.adminService.checkUser(adminId);
   }
 }
