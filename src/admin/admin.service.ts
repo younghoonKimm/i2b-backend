@@ -21,9 +21,10 @@ export class AdminService {
     private readonly jwtService: JwtService,
   ) {}
 
-  async checkUser(adminId) {
+  async checkUser(adminId: string) {
+    console.log(adminId);
     const user = await this.adminInfo.findOne({
-      adminId,
+      adminId: adminId,
     });
 
     if (user) {
