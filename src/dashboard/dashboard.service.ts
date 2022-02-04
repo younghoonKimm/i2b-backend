@@ -35,48 +35,23 @@ export class DashBoardService {
         .select([...getInfoDataSelected])
         .getMany();
 
-      //     const prac = await queryRunner.query(`
-      //     SELECT COUNT(t), t
-      //     FROM (SELECT jsonb_array_elements_text('[1,2]'::jsonb) AS t
-      //     FROM base_info_entity WHERE 'projectStatus' = '[1,3]') AS t1
-      //     GROUP BY t
-      // `);
+      const projectStatus = await queryRunner.query(`
+          SELECT count(id), UNNEST("projectStatus") as element
+          FROM "base_info_entity"
+          GROUP BY element
+      `);
 
-      // const prac = await queryRunner.query(
-      //   `SELECT COUNT(*) FROM base_info_entity
-      //   WHERE CAST("projectStatus" AS text) like '%1%'
-      //   AND CAST("projectStatus" AS text) like '%2%'
-      //   GROUP BY "projectStatus"
-      //   `,
-      // );
-      // COUNT(*)
-      // const prac = await queryRunner.query(
-      //   `SELECT COUNT(t), t
-      //    FROM (SELECT jsonb_array_elements_text(json->'base_info_entity.projectStatus') AS t
-      //    FROM TWEETS WHERE event_id = XX) AS t1
-      //    GROUP BY t
-      //   `,
-      // );
+      const projectDispatch = await queryRunner.query(`
+          SELECT count(id), "projectDispatch" as element
+          FROM "detail_info_entity"
+          GROUP BY element
+      `);
 
-      // const prac = await queryRunner.query(`
-      //     SELECT COUNT(t), t
-      //     FROM (SELECT jsonb_array_elements_text("projectStatus" -> '[1,2]'::int[]) AS t
-      //     FROM base_info_entity WHERE 'projectStatus' = '[1,3]') AS t1
-      //     GROUP BY t
-      // `);
-
-      // console.log(prac);
-      //       SELECT port, count(*) AS ct
-      // FROM   tbl t, unnest(t.ports) AS port  -- implicit LATERAL join
-      // GROUP  BY port;
-
-      // const prac = await queryRunner.query(
-      //   `
-      //   SELECT json_array_length('["1","2","3","4","5"]') AS length FROM "base_info_entity";
-      //   `,
-      // );
-      // console.log(prac);
-      // select count(*) from base_info_entity where "projectStatus"=any([5])
+      const projectSelection = await queryRunner.query(`
+        SELECT count(id), "projectSelection" as element
+        FROM "detail_info_entity"
+        GROUP BY element
+      `);
 
       const recentInfoDatas = await this.info
         .createQueryBuilder("info_entity")
