@@ -50,7 +50,7 @@ export class DashBoardService {
       const projectSelection = await queryRunner.query(`
         SELECT count(id), "projectSelection" as element
         FROM "detail_info_entity"
-        GROUP BY element
+        GROUP BY element,
       `);
 
       const recentInfoDatas = await this.info

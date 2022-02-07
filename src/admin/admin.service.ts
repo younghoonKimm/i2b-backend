@@ -91,23 +91,33 @@ export class AdminService {
   ): Promise<AdminEditOutput> {
     const { adminEmail, adminPw, adminChnagePw } = adminEditInput;
     try {
-      const user = await this.adminInfo.findOne({
-        id: token.id,
-      });
+      const user = await this.adminInfo.findOne(
+        { id: token.id },
+        { select: ["adminEmail", "adminPw"] },
+      );
 
+      if (!user) {
+        return {
+          success: false,
+          error: "User not found",
+        };
+      }
       if (!user) return { success: false, error: "아이디 중복" };
+      if (adminPw) {
+        const passwordCorrect = await user.checkPassword(adminPw);
+        if (passwordCorrect) {
+          user.adminPw = adminPw;
+          await this.adminInfo.save(user);
+        } else {
+          return { success: false, error: "비밀번호 불일치" };
+        }
+      }
 
-      // const decoded = this.jwtService.verify(user.adminPw.toString());
-
-      // console.log("a");
       if (adminEmail) {
         user.adminEmail = adminEmail;
         await this.adminInfo.save(user);
       }
-      if (adminPw) {
-        user.adminPw = adminPw;
-        await this.adminInfo.save(user);
-      }
+
       return { success: true };
     } catch (error) {
       return { error };
