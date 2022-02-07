@@ -8,8 +8,8 @@ export class DeliverLists extends PickType(CategoryEntity, ["seqNo"]) {
   @IsString()
   parentSeqNo: string;
 
-  @Column("jsonb", { nullable: true })
-  checkedName: string[];
+  @Column("jsonb", { nullable: true, default: [] })
+  checkedNames?: string[];
 }
 
 @Entity()
@@ -20,6 +20,7 @@ export class DeliverablesEntity {
   @Column()
   deliverable: string;
 
+  @Column("jsonb", { default: [] })
   @ApiProperty()
   deliverablesLists: DeliverLists[];
 }
