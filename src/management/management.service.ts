@@ -104,57 +104,26 @@ export class ManagementService {
           if (isValue) {
             continue;
           } else {
-            // deleteDates.push(dueDate);
-            await this.dueDateEntity.delete({
-              projDueDateMonth: dueDate,
-            });
+            deleteDates.push(dueDate);
           }
         }
 
-        // const values = [];
+        const deleteList = await this.dueDateEntity.find({
+          projDueDateMonth: In(deleteDates),
+        });
 
-        // for (let i = 0; i < dueDates.length; i++) {
-        //   const dueDate = dueDates[i].projDueDateMonth;
-        //   const isValue = array.find((value) => value === dueDate);
-        //   if (isValue) {
-        //     continue;
-        //   } else {
-        //     values.push(dueDates);
-        //   }
-        // }
-
-        // const deleteList = await this.dueDateEntity.find({
-        //   projDueDateMonth: In(values),
-        // });
-
-        // if (!deleteList[0]) {
-        //   this.dueDateEntity.delete(deleteList.map((a) => a.projDueDateSeqNo));
-        // }
+        if (deleteList[0]) {
+          await queryRunner.manager.delete(
+            DueDateEntity,
+            deleteList.map((a) => a.projDueDateSeqNo),
+          );
+        }
 
         if (addDates.length > 0) {
           await Promise.all(addDates.map((value) => saveDueDate(value)));
-          await queryRunner.commitTransaction();
         }
-        //query manage를 통한 deleteDates 추가해야함
-        // if (deleteDates) {
-        //   console.log(deleteDates);
-        //   await this.dueDateEntity
-        //     .createQueryBuilder("due_date_entity")
-        //     // .where(
-        //     //   "projDueDateMonth = :projDueDateMonth",
-        //     //   deleteDates.forEach((value) => {
-        //     //     projDueDateMonth: value;
-        //     //   }),
-        //     // )
-        //     // "projDueDateMonth = :projDueDateMonth"
-        //     .where(
-        //       deleteDates.map((value) => {
-        //         projDueDateMonth: value;
-        //       }),
-        //     )
-        //     .delete()
-        //     .execute();
-        // }
+
+        await queryRunner.commitTransaction();
       } else {
         for (let i = 0; i < array.length; i++) {
           const dueDate = array[i];

@@ -60,7 +60,11 @@ export class DashBoardService {
         .take(5)
         .getMany();
 
-      return { allData: endInfoDatas, infoData: recentInfoDatas };
+      return {
+        allData: endInfoDatas,
+        count: { projectStatus, projectDispatch, projectSelection },
+        infoData: recentInfoDatas,
+      };
     } catch (error) {
       return { error };
     }
