@@ -15,8 +15,24 @@ class InfoDashboardData extends PickType(PartialType(InfoEntity), [
   "updateAt",
 ]) {}
 
+class CountData {
+  count?: string;
+
+  element?: number;
+}
+
+class EndInfoCountData {
+  projectStatus?: CountData[];
+
+  projectDispatch?: CountData[];
+
+  projectSelection?: CountData[];
+}
+
 export class EndInfoOutput {
   allData?: AllInfoDto[];
+
+  count?: EndInfoCountData;
 
   infoData?: InfoDashboardData[];
 
