@@ -48,7 +48,6 @@ export class AdminController {
     @Token() token: any,
     @Body() adminEditInput: AdminEditInput,
   ): Promise<AdminEditOutput> {
-    console.log(adminEditInput);
     return this.adminService.editAdminUser(token, adminEditInput);
   }
 
@@ -96,9 +95,9 @@ export class AdminController {
   }
 
   @UseGuards(AuthGuard)
-  @Get("/user/check")
+  @Post("/user/check")
   @ApiBearerAuth("bearerAuth")
-  getUserCheck(@Body() adminId: string) {
+  getUserCheck(@Body() { adminId }: any) {
     return this.adminService.checkUser(adminId);
   }
 }

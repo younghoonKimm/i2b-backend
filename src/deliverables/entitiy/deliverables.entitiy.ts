@@ -1,10 +1,15 @@
 import { PrimaryGeneratedColumn, Column, Entity } from "typeorm";
 import { PickType, ApiProperty } from "@nestjs/swagger";
 import { CategoryEntity } from "src/management/entities/category.entity";
+import { IsString } from "class-validator";
 
 export class DeliverLists extends PickType(CategoryEntity, ["seqNo"]) {
   @Column()
-  checkedName: string[];
+  @IsString()
+  parentSeqNo: string;
+
+  @Column("jsonb", { nullable: true, default: [] })
+  checkedNames?: string[];
 }
 
 @Entity()
@@ -15,7 +20,7 @@ export class DeliverablesEntity {
   @Column()
   deliverable: string;
 
-  @Column("jsonb", { nullable: true })
+  @Column("jsonb", { default: [] })
   @ApiProperty()
   deliverablesLists: DeliverLists[];
 }

@@ -103,7 +103,7 @@ export class InfoService {
               review: newReview,
             });
           } else {
-            return { error: "항목 없음" };
+            return { error: "이전 항목 없음" };
           }
         }
         if (exists[infoData.status]) {
