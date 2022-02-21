@@ -19,10 +19,10 @@ src/auth/auth
 
 ### 구현 예정 항목
 
-- 파일 업로드
-- 파일 다운로드
-- 선호 산출물 설정
-- PM 설정
-- DashBoard 항목 카운팅
-- refresh Token
-- Swagger 추가 설정
+- [ ] 파일 업로드
+- [ ] 파일 다운로드
+- [ ] 선호 산출물 설정
+- [ ] PM 설정
+- [ ] DashBoard 항목 카운팅
+- [ ] refresh Token
+- [ ] Swagger 추가 설정
